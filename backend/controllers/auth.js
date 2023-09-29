@@ -64,18 +64,26 @@ export const login = async (req, res) => {
 
 export const register = async (req, res) => {
 	try {
-		const { firstName, lastName, email, password } = req.body
+		const { name, email, password } = req.body
 
-		if(!firstName || !lastName || !email || !password) return res.status(400).json({
+		if(!name || !email || !password) return res.status(400).json({
 			success: false,
 			result: null,
 			message: 'Invalid Credentials'
 		})
 
+		const existingUser = await User.findOne({ email })
+
+		if(existingUser) return res.status(409).json({
+			success: false,
+			result: null,
+			message: 'Email already existing'
+		})
+
 		const salt = await bcrypt.genSalt(12)
 		const hashedPassword = await bcrypt.hash(password, salt)
 
-		const newUser = new User({ firstName, lastName, email, password: hashedPassword })
+		const newUser = new User({ name, email, username: name.replace(' ', ''), password: hashedPassword })
 		
 		if(!newUser) return res.status(500).json({
 			success: false,
@@ -84,6 +92,7 @@ export const register = async (req, res) => {
 		})
 		
 		const user = await newUser.save()
+
 		const token = jwt.sign({ id: user._id }, process.env.KEY, { expiresIn: '15m' })
 		
 		res.status(201)
@@ -99,7 +108,7 @@ export const register = async (req, res) => {
 				success: true,
 				result: {
 					id: user._id,
-					name: user.firstName + " " + user.lastName,
+					name: user.name,
 					email: user.email
 				},
 				message: 'Successfully logged in'

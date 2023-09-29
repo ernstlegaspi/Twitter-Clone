@@ -6,11 +6,12 @@ import { Provider } from 'react-redux'
 import { apiSlice } from './slices/apiSlice'
 
 import App from './App'
+import Auth from './slices/auth/authSlice'
 
 const store = configureStore({
 	reducer: {
 		[apiSlice.reducerPath]: apiSlice.reducer,
-		
+		Auth
 	},
 	middleware: getDefaultMiddleware => getDefaultMiddleware().concat(apiSlice.middleware)
 })
