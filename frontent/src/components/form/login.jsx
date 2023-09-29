@@ -1,12 +1,10 @@
 import React, { useState } from 'react'
 
 import { useDispatch } from 'react-redux'
-
-import { useAuthLoginMutation } from '../../slices/auth/authEndpoints'
 import { login } from '../../slices/auth/authSlice'
+import { loginApi } from '../../api/api'
 
 const LoginForm = () => {
-	const [authLogin] = useAuthLoginMutation()
 	const dispatch = useDispatch()
 	const [formData, setFormData] = useState({ email: '', password: '' })
 
@@ -14,8 +12,8 @@ const LoginForm = () => {
 		e.preventDefault()
 		
 		try {
-			const res = await authLogin({ ...formData }).unwrap()
-			dispatch(login({ ...res }))
+			const { data } = await loginApi({ ...formData })
+			dispatch(login(data.result))
 			window.location.reload()
 		}
 		catch(error) {

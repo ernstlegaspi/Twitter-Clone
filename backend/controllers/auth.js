@@ -33,21 +33,13 @@ export const login = async (req, res) => {
 
 		delete user.password
 
-		res.status(200)
-		.cookie('token', token, {
-			maxAge: 900,
-			sameSite: process.env.NODE_ENV !== 'production' ? 'none' : 'Lax',
-			httpOnly: true,
-			secure: true,
-			domain: req.hostname,
-			Path: '/'
-		})
-		.json({
+		res.status(200).json({
 			success: true,
 			result: {
 				id: user._id,
-				name: user.firstName + " " + user.lastName,
-				email: user.email
+				name: user.name,
+				email: user.email,
+				token
 			},
 			message: 'Successfully logged in'
 		})
@@ -94,25 +86,17 @@ export const register = async (req, res) => {
 		const user = await newUser.save()
 
 		const token = jwt.sign({ id: user._id }, process.env.KEY, { expiresIn: '15m' })
-		
-		res.status(201)
-			.cookie('token', token, {
-				maxAge: 900, // 15 minutes
-				sameSite: process.env.NODE_ENV !== 'production' ? 'none' : 'Lax',
-				httpOnly: true,
-				secure: true,
-				domain: req.hostname,
-				Path: '/'
-			})
-			.json({
-				success: true,
-				result: {
-					id: user._id,
-					name: user.name,
-					email: user.email
-				},
-				message: 'Successfully logged in'
-			})
+
+		res.status(201).json({
+			success: true,
+			result: {
+				id: user._id,
+				name: user.name,
+				email: user.email,
+				token
+			},
+			message: 'Successfully logged in'
+		})
 	}
 	catch(error) {
 		res.status(500).json({

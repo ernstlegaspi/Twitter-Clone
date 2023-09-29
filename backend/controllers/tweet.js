@@ -28,6 +28,25 @@ export const addTweet = async (req, res) => {
 		})
 	}
 }
+export const getTweets = async (req, res) => {
+	try {
+		const tweets = await Tweet.find()
+
+		res.status(200).json({
+			success: true,
+			result: tweets,
+			message: 'Tweets retrieved'
+		})
+	}
+	catch(error) {
+		res.status(500).json({
+			success: false,
+			result: null,
+			error,
+			message: 'Internal Server Error'
+		})
+	}
+}
 
 export const getTweetsByUserId = async (req, res) => {
 	try {

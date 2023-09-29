@@ -1,12 +1,10 @@
 import React, { useState } from 'react'
 
 import { useDispatch } from 'react-redux'
-
-import { useRegisterMutation } from '../../slices/auth/authEndpoints'
 import { login } from '../../slices/auth/authSlice'
+import { register } from '../../api/api'
 
 const RegisterForm = () => {
-	const [register] = useRegisterMutation()
 	const [formData, setFormData] = useState({ name: '', email: '', password: '' })
 	const dispatch = useDispatch()
 	
@@ -14,8 +12,8 @@ const RegisterForm = () => {
 		e.preventDefault()
 		
 		try {
-			const res = await register({ ...formData }).unwrap()
-			dispatch(login({ ...res }))
+			const { data } = await register({ ...formData })
+			dispatch(login(data.result))
 			window.location.reload()
 		}
 		catch(error) {
