@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { logout } from '../../slices/auth/authSlice'
 import { setTweet } from '../../slices/tweet/tweetSlice'
-import { addTweet, getAllTweets } from '../../api/api'
+import { addTweet, likeTweet, getAllTweets } from '../../api/api'
 import { useNavigate } from 'react-router-dom'
 
 const LoggedInHome = () => {
@@ -28,10 +28,19 @@ const LoggedInHome = () => {
 		dispatch(setTweet(data.result))
 	}
 
-	const handleProfile = () => {
+	const handleProfilePage = () => {
+		dispatch(setTweet(null))
 		navigate(username)
 	}
 
+	const handleLikeTweet = async tweetId => {
+		await likeTweet({ id: tweetId, userId: id })
+		
+		const { data } = await getAllTweets()
+
+		dispatch(setTweet(data.result))
+	}
+	
 	useEffect(() => {
 		const getTweetsApi = async () => {
 			const { data } = await getAllTweets()
@@ -52,11 +61,14 @@ const LoggedInHome = () => {
 						<button type="submit">Add Tweet</button>
 					</form>
 					<button onClick={handleLogout}>Logout</button><br /><br/>
-					<button onClick={handleProfile}>Profile</button>
+					<button onClick={handleProfilePage}>Profile</button>
 				</div>
 				<div className="ml-[30px]">
 					{tweets ? tweets.map(tweet => (
-						<p key={tweet._id}>{tweet.body}</p>
+						<div key={tweet._id}>
+							<p>{tweet.body}</p>
+							<button className="bg-slate-700 rounded-md p-2 text-white" onClick={() => handleLikeTweet(tweet._id)}>Like Tweet</button>
+						</div>
 					)) : null}
 				</div>
 			</div>

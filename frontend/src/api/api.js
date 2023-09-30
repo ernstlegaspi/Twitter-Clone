@@ -9,8 +9,10 @@ API.interceptors.request.use(req => {
 })
 
 export const addTweet = data => API.post('tweet/', data)
+export const likeTweet = data => API.put('tweet/', data)
 export const getAllTweets = () => API.get('tweet/')
 export const getTweetsByUsername = username => API.get(`tweet/${username}`)
+export const getUserLikedTweets = username => API.get(`user/${username}`)
 
 export const loginApi = data => API.post('auth/login', data)
 export const register = data => API.post('auth/', data)
