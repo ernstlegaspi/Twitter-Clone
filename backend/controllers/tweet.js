@@ -48,11 +48,11 @@ export const getTweets = async (req, res) => {
 	}
 }
 
-export const getTweetsByUserId = async (req, res) => {
+export const getTweetsByUsername = async (req, res) => {
 	try {
-		const { userId } = req.params
+		const { username } = req.params
 
-		const tweets = await Tweet.find({ userId })
+		const tweets = await Tweet.find({ username })
 
 		res.status(200).json({
 			success: true,

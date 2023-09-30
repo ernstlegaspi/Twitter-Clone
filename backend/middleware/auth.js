@@ -11,31 +11,24 @@ export const verifyToken = async (req, res, next) => {
 			result: null,
 			message: 'Unauthorized: Token is not valid'
 		})
-		console.log("token")
 
 		const decodedData = jwt.verify(token, process.env.KEY)
 		console.log("decodedData")
-
 		if(!decodedData) return res.status(401).json({
 			success: false,
 			result: null,
 			message: 'Token is not valid'
 		})
-		console.log("decodedData all goods")
 
 		const user = await User.findOne({ _id: decodedData.id })
-		console.log("user")
 
 		if(!user)  return res.status(400).json({
 			success: false,
 			result: null,
 			message: 'User is not existing'
 		})
-		console.log("user all goods")
 
 		req.userId = decodedData.id
-
-		console.log("next")
 
 		next()
 	}
