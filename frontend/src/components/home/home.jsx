@@ -1,6 +1,7 @@
 import React, { lazy, Suspense, useState, useTransition } from 'react'
 
 const LoggedInHome = lazy(() => import('./loggedInHome'))
+const LandingPage = lazy(() => import('./landing_page/landingPage'))
 
 const LoginForm = lazy(() => import('../form/login'))
 const RegisterForm = lazy(() => import('../form/register'))
@@ -12,16 +13,26 @@ const Home = () => {
 	const isLoggedIn = localStorage.getItem('userInfo')
 
 	return (
-		<div>
+		<>
 			<Suspense fallback={<p>Loading...</p>}>
-				{ isLoggedIn ? <LoggedInHome /> : (
-					<>
-						<button onClick={() => {startTransition(() => setIsLoginForm(prev => !prev))}}>Toggle Form</button>
-						{isLoginForm ? <LoginForm /> : <RegisterForm />}
-					</>
-				) }
+				<LandingPage />
 			</Suspense>
-		</div>
+		</>
+		//  <div className="h-screen">
+		//  	<div className="flex h-[96%]">
+		// 		<div className="w-[50%] flex items-center justify-center">
+		//  			<LazyLoadImage src="/images/logo.webp" width={90} height={90} alt="Logo" effect='blur' />
+		//  		</div>
+		// 		<Suspense fallback={<p>Loading...</p>}>
+		// 			{ isLoggedIn ? <LoggedInHome /> : (
+		// 				<>
+		// 					<button onClick={() => {startTransition(() => setIsLoginForm(prev => !prev))}}>Toggle Form</button>
+		// 					{isLoginForm ? <LoginForm /> : <RegisterForm />}
+		// 				</>
+		// 			) }
+		// 		</Suspense>
+		// 	</div>
+		// </div>
 	)
 }
 
