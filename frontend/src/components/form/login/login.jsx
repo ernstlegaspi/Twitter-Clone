@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
 
 import { useDispatch } from 'react-redux'
-import { login } from '../../slices/auth/authSlice'
-import { loginApi } from '../../api/api'
+import { login } from '../../../slices/auth/authSlice'
+import { loginApi } from '../../../api/api'
 
 const LoginForm = () => {
 	const dispatch = useDispatch()

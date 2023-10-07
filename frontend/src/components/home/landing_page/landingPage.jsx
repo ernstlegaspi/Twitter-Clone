@@ -6,7 +6,7 @@ import { AiFillApple, AiOutlineGoogle } from 'react-icons/ai'
 
 import 'react-lazy-load-image-component/src/effects/blur.css';
 
-import Register from '../../form/register'
+import Register from '../../form/register/register'
 
 const LandingPage = () => {
 	return (
@@ -49,7 +49,7 @@ const LandingPage = () => {
 				</div>
 			</div>
 			<div className="text-center w-[100%] text-[13px] homepage-text-color">
-				{footerNavigationText.map(text => <p className="mr-5 inline-block cursor-pointer hover:underline">{text}</p>)}
+				{footerNavigationText.map((text, index) => <p key={index} className="mr-5 inline-block cursor-pointer hover:underline">{text}</p>)}
 				<p className="inline-block">&copy; 2023 X Corp.</p>
 			</div>
 			<div className="bg-black/40 inset-0 absolute z-20 flex items-center justify-center">

@@ -1,16 +1,17 @@
-import React, { lazy, Suspense, useState, useTransition } from 'react'
+import React, { lazy, Suspense } from 'react'
+// import React, { lazy, Suspense, useState, useTransition } from 'react'
 
-const LoggedInHome = lazy(() => import('./loggedInHome'))
+// const LoggedInHome = lazy(() => import('./loggedInHome'))
 const LandingPage = lazy(() => import('./landing_page/landingPage'))
 
-const LoginForm = lazy(() => import('../form/login'))
-const RegisterForm = lazy(() => import('../form/register'))
+// const LoginForm = lazy(() => import('../form/login/login'))
+// const RegisterForm = lazy(() => import('../form/register/register'))
 
 const Home = () => {
-	const [isLoginForm, setIsLoginForm] = useState(true)
+	// const [isLoginForm, setIsLoginForm] = useState(true)
 	// eslint-disable-next-line
-	const [isPending, startTransition] = useTransition()
-	const isLoggedIn = localStorage.getItem('userInfo')
+	// const [isPending, startTransition] = useTransition()
+	// const isLoggedIn = localStorage.getItem('userInfo')
 
 	return (
 		<>
