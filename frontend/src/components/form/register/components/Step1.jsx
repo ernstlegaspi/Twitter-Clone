@@ -2,12 +2,12 @@ import React from 'react'
 
 import { months, days, years } from '../../../../constants'
 
-const Step1 = ({ _months, _days, _years, setMonths, setDays, setYears, handleStep1 }) => {
+const Step1 = ({ name, email, _months, _days, _years, setMonths, setDays, setYears, handleStep1 }) => {
 	return (
 		<>
 			<p className="mt-6 text-[33px] font-bold">Create your account</p>
-			<input onChange={e => handleStep1(e)} name="name" type="text" placeholder="Name" className="outline-blue-400 border border-color rounded w-full py-4 px-2 mt-6" />
-			<input onChange={e => handleStep1(e)} type="email" placeholder="Email" name="email" className="outline-blue-400 border border-color rounded w-full py-4 px-2 mt-6" />
+			<input onChange={e => handleStep1(e)} value={name} name="name" type="text" placeholder="Name" className="outline-blue-400 border border-color rounded w-full py-4 px-2 mt-6" />
+			<input onChange={e => handleStep1(e)} value={email} type="email" placeholder="Email" name="email" className="outline-blue-400 border border-color rounded w-full py-4 px-2 mt-6" />
 			<p className="font-bold mt-8">Date of birth</p>
 			<p className="mt-2 mb-5 leading-4 text-[15px] homepage-text-color">This will not be shown publicly. Confirm your own age, even if this account is for a business, a pet, or something else.</p>
 			<div className="w-full">

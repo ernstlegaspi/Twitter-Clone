@@ -5,6 +5,8 @@ import { AiOutlineCheck } from 'react-icons/ai'
 const Step2 = () => {
 	const [checked, setChecked] = useState(false)
 	
+	const blueText = text => <span className="cursor-pointer hover:underline text-sky-500 text-base">{text}</span>
+
 	return (
 		<>
 			<p className="mt-6 text-[33px] font-bold">Customize your experience</p>
@@ -15,7 +17,7 @@ const Step2 = () => {
 					{checked ? <AiOutlineCheck className="text-white" size={13} /> : null}
 				</div>
 			</div>
-			<p className="mt-7 homepage-text-color text-sm">By signing up, you agree to our <span className="cursor-pointer hover:underline text-sky-500 text-base">Terms</span>, <span className="cursor-pointer hover:underline text-sky-500 text-base">Privacy Policy</span>, and <span className="cursor-pointer hover:underline text-sky-500 text-base">Cookie Use</span>. X may use your contact information, including your email address and phone number for purposes outlined in our Privacy Policy. <span className="cursor-pointer hover:underline text-sky-500 text-base">Learn more</span></p>
+			<p className="mt-7 homepage-text-color text-sm">By signing up, you agree to our {blueText("Terms")}, {blueText("Privacy Policy")}, and {blueText("Cookie Use")}. X may use your contact information, including your email address and phone number for purposes outlined in our Privacy Policy. {blueText("Learn more")}.</p>
 		</>
 	)
 }
