@@ -11,12 +11,12 @@ const Home = () => {
 	// const [isLoginForm, setIsLoginForm] = useState(true)
 	// eslint-disable-next-line
 	// const [isPending, startTransition] = useTransition()
-	// const isLoggedIn = localStorage.getItem('userInfo')
+	const isLoggedIn = localStorage.getItem('userInfo')
 
 	return (
 		<>
 			<Suspense fallback={<p>Loading...</p>}>
-				<LandingPage />
+				{isLoggedIn ? <p>Logged in</p> : <LandingPage />}
 			</Suspense>
 		</>
 		//  <div className="h-screen">

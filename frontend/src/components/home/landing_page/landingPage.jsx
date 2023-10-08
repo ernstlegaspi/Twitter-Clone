@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 
 import { LazyLoadImage } from 'react-lazy-load-image-component'
 import { footerNavigationText } from '../../../constants'
@@ -9,6 +9,8 @@ import 'react-lazy-load-image-component/src/effects/blur.css';
 import Register from '../../form/register/register'
 
 const LandingPage = () => {
+	const [showRegister, setShowRegister] = useState(false)
+	
 	return (
 		<div className="h-screen">
 			<div className="h-[96%] w-[80%] mx-auto flex max-md:flex-col max-md:justify-center">
@@ -32,7 +34,7 @@ const LandingPage = () => {
 							<div className="flex justify-center">
 								<div className="bg-white w-[30px] text-center absolute mt-[-15px]">or</div>
 							</div>
-							<div className="bg-sky-500 cursor-pointer transition-all hover:bg-sky-600 mt-5 py-2 w-auto justify-center rounded-full border flex items-center">
+							<div onClick={() => setShowRegister(true)} className="bg-sky-500 cursor-pointer transition-all hover:bg-sky-600 mt-5 py-2 w-auto justify-center rounded-full border flex items-center">
 								<p className="font-bold text-white text-[15px]">Create account</p>
 							</div>
 							<p className="mt-1 homepage-text-color text-[12px]">
@@ -52,9 +54,7 @@ const LandingPage = () => {
 				{footerNavigationText.map((text, index) => <p key={index} className="mr-5 inline-block cursor-pointer hover:underline">{text}</p>)}
 				<p className="inline-block">&copy; 2023 X Corp.</p>
 			</div>
-			<div className="bg-black/40 inset-0 absolute z-20 flex items-center justify-center">
-				<Register />
-			</div>
+			{showRegister ? <Register setShowRegister={setShowRegister} /> : null}
 		</div>
 	)
 }

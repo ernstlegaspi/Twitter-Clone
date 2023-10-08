@@ -17,5 +17,4 @@ export const getUserLikedTweets = username => API.get(`user/${username}`)
 export const loginApi = data => API.post('auth/login', data)
 export const register = data => API.post('auth/', data)
 
-export const generateOtp = () => API.get('generateOtp/')
-export const sendOtp = data => API.post('sendOtp/', data)
+export const generateOtp = data => API.post('generateOtp/', data)

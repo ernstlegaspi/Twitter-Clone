@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import { AiOutlineCheck } from 'react-icons/ai'
 
 const Step2 = () => {
-	const [checked, setChecked] = useState(false)
+	const [checked, setChecked] = useState(true)
 	
 	const blueText = text => <span className="cursor-pointer hover:underline text-sky-500 text-base">{text}</span>
 

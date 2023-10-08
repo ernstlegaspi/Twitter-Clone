@@ -1,14 +1,15 @@
-import React, { useState, lazy, Suspense, useTransition } from 'react'
+import React, { useEffect, useState, lazy, Suspense, useTransition } from 'react'
 
-// import { useDispatch } from 'react-redux'
-// import { login } from '../../../slices/auth/authSlice'
-// import { register } from '../../../api/api'
-import { generateOtp, sendOtp } from '../../../api/api'
+import { useDispatch, useSelector } from 'react-redux'
+import { login, setOtp } from '../../../slices/auth/authSlice'
+import { generateOtp, register } from '../../../api/api'
 
 import { AiOutlineClose } from 'react-icons/ai'
 import { BsArrowLeft } from 'react-icons/bs'
 
 import { toast } from 'react-hot-toast'
+
+import { PropagateLoader } from 'react-spinners'
 
 const Step1 = lazy(() => import('./components/Step1'))
 const Step2 = lazy(() => import('./components/Step2'))
@@ -16,39 +17,53 @@ const Step3 = lazy(() => import('./components/Step3'))
 const Step4 = lazy(() => import('./components/Step4'))
 const Step5 = lazy(() => import('./components/Step5'))
 
-const RegisterForm = () => {
-	// const [formData, setFormData] = useState({ name: '', email: '', password: '' })
-	
-	const [step1, setStep1] = useState({ name: '', email: '' })
+const RegisterForm = ({ setShowRegister }) => {
+	// dates
 	const [_months, setMonths] = useState('')
 	const [_days, setDays] = useState('')
 	const [_years, setYears] = useState('')
+
+	// use info
+	const [step1, setStep1] = useState({ name: '', email: '' })
+	const [password, setPassword] = useState('')
+
+	// otp
 	const [verificationOtp, setVerificationOtp] = useState('')
+
+	const [loading, setLoading] = useState(false)
 	const [count, setCount] = useState(1)
+
 	// eslint-disable-next-line
 	const [isPending, startTransition] = useTransition()
-	
-	let generatedOtp = ''
 
-	// const dispatch = useDispatch()
+	const dispatch = useDispatch()
+	const generatedOtp = useSelector(state => state.auth.otp)
 	
-	// const handleSubmit = async e => {
-	// 	e.preventDefault()
+	const handleSubmit = async e => {
+		e.preventDefault()
+
+		if(password.length < 8 || password === '') {
+			toast.error('Enter a valid password')
+
+			return
+		}
 		
-	// 	try {
-	// 		const { data } = await register({ ...formData })
-	// 		dispatch(login(data.result))
-	// 		window.location.reload()
-	// 	}
-	// 	catch(error) {
-	// 		alert(`Can not register ${error}`)
-	// 	}
-	// }
+		try {
+			const { data } = await register({ password, name: step1.name, email: step1.email })
+			dispatch(login(data.result))
+			window.location.reload()
+		}
+		catch(error) {
+			toast.error(`Can not register ${error}`)
+		}
+	}
 
 	const handleStep1 = e => setStep1({ ...step1, [e.target.name]: e.target.value })
 
 	const handleBack = () => {
 		if(count === 1) {
+			setShowRegister(false)
+
 			return
 		}
 
@@ -56,62 +71,75 @@ const RegisterForm = () => {
 	}
 
 	const handleButton = async () => {
+		if(count === 3) {
+			setLoading(true)
+
+			const res = await generateOtp({ email: step1.email, name: step1.name })
+			const { otp } = res.data
+			
+			dispatch(setOtp(otp))
+			
+			startTransition(() => setCount(prev => prev + 1))
+
+			return
+		}
+
 		if(!step1.name || !step1.email || !_months || !_days || !_years) {
 			toast.error("All fields are required")
-			
+
 			return
 		}
 
 		startTransition(() => setCount(prev => prev + 1))
 
-		if(count === 3) {
-			const res = await generateOtp()
-			const { otp } = res.data
-			
-			generatedOtp = otp
-
-			await sendOtp({ email: step1.email, name: step1.name, otp })
-			
-			return
-		}
-
 		if(count === 4) {
-			if(verificationOtp.length() !== 6 || verificationOtp === '') {
+			if(verificationOtp.length !== 6 || verificationOtp === '' || verificationOtp !== generatedOtp) {
 				toast.error('Enter a valid otp')
 				startTransition(() => setCount(prev => prev - 1))
+
+				return
 			}
 
-			return
+			startTransition(() => setCount(5))
 		}
 	}
 
+	useEffect(() => {
+		if(generatedOtp !== '') setLoading(false)
+
+	}, [generatedOtp])
+
 	return (
-		<>
+		<div className="bg-black/40 inset-0 absolute z-20 flex items-center justify-center">
 			<div className="bg-white h-[650px] w-[600px] rounded-[15px] pt-2 pl-2">
-				<div className="flex h-full">
-					<div onClick={handleBack} className="hover:bg-gray-200 rounded-full p-2 w-max h-max cursor-pointer">
-						{count === 1 ? <AiOutlineClose size={19} /> : <BsArrowLeft size={19} /> }
+				{loading ? <PropagateLoader color="#0EA5E9" /> : (
+					<div className="flex h-full">
+						<div onClick={handleBack} className="hover:bg-gray-200 rounded-full p-2 w-max h-max cursor-pointer">
+							{count === 1 ? <AiOutlineClose size={19} /> : <BsArrowLeft size={19} /> }
+						</div>
+						{count === 5 ? (
+							<form onSubmit={handleSubmit} className="ml-7 w-[76%] h-full relative">
+								<Step5 setPassword={setPassword} />
+								<button type="submit" className='absolute bottom-0 mb-5 text-center rounded-full text-white font-bold text-lg bg-sky-500 w-full py-3'>
+									Sign up
+								</button>
+							</form>
+						) : (
+							<div className="ml-7 w-[76%] h-full relative">
+								<p className="text-xl font-bold mt-[2px]">Step {count} of 5</p>
+								<button onClick={handleButton} className={`absolute bottom-0 mb-5 text-center rounded-full text-white font-bold text-lg ${count === 3 ? 'bg-sky-500' : 'bg-black'} w-full py-3`}>
+									{count === 3 ? 'Sign up' : 'Next'}
+								</button>
+								<Suspense fallback={<p>Loading...</p>}>
+									{count === 1 ? <Step1 name={step1.name} email={step1.email} handleStep1={handleStep1} _months={_months} _days={_days} _years={_years} setMonths={setMonths} setDays={setDays} setYears={setYears} /> : count === 2 ? <Step2 /> : count === 3 ? <Step3 name={step1.name} email={step1.email} dateOfBirth={`${_months.substring(0, 3)} ${_days}, ${_years}`} /> :
+									<Step4 setVerificationOtp={setVerificationOtp} email={step1.email} />}
+								</Suspense>
+							</div>
+						)}
 					</div>
-					<div className="ml-7 w-[76%] h-full relative">
-						<p className="text-xl font-bold mt-[2px]">Step {count} of 5</p>
-						<button onClick={handleButton} className={`absolute bottom-0 mb-5 text-center rounded-full text-white font-bold text-lg ${count === 3 ? 'bg-sky-500' : 'bg-black'} w-full py-3`}>
-							{count === 3 ? 'Sign up' : 'Next'}
-						</button>
-						<Step5 />
-						{/* <Suspense fallback={<p>Loading...</p>}>
-							{count === 1 ? <Step1 name={step1.name} email={step1.email} handleStep1={handleStep1} _months={_months} _days={_days} _years={_years} setMonths={setMonths} setDays={setDays} setYears={setYears} /> : count === 2 ? <Step2 /> : count === 3 ? <Step3 name={step1.name} email={step1.email} dateOfBirth={`${_months.substring(0, 3)} ${_days}, ${_years}`} /> :
-							<Step4 setVerificationOtp={setVerificationOtp} email={step1.email} />}
-						</Suspense> */}
-					</div>
-				</div>
+				)}
 			</div>
-		</>
-		// <form onSubmit={handleSubmit}>
-		// 	<input type="text" placeholder="Name" name="name" onChange={e => handleFormData(e)} /> <br /><br />
-		// 	<input type="email" placeholder="Email" name="email" onChange={e => handleFormData(e)} /> <br /> <br />
-		// 	<input type="password" placeholder="Password" name="password" onChange={e => handleFormData(e)} /> <br /> <br />
-		// 	<button type="submit">Register</button>
-		// </form>
+		</div>
 	)
 }
 
