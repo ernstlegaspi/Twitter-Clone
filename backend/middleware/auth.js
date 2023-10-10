@@ -13,7 +13,7 @@ export const verifyToken = async (req, res, next) => {
 		})
 
 		const decodedData = jwt.verify(token, process.env.KEY)
-		console.log("decodedData")
+
 		if(!decodedData) return res.status(401).json({
 			success: false,
 			result: null,

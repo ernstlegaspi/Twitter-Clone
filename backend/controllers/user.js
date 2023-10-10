@@ -80,11 +80,7 @@ export const generateOtp = (req, res) => {
 		message: 'Internal Server Errorr'
 	})
 
-	res.status(200).json({ otp: newOtp })
-}
-
-export const sendOtpToEmail = (req, res) => {
-	const { otp, name, email } = req.body
+	const { name, email } = req.body
 
 	const config = {
 		service: 'gmail',
@@ -111,7 +107,7 @@ export const sendOtpToEmail = (req, res) => {
 			table: {
 				data: [
 					{
-						otp
+						otp: newOtp
 					}
 				]
 			},
@@ -129,12 +125,9 @@ export const sendOtpToEmail = (req, res) => {
 	}
 
 	transporter.sendMail(message)
-	.then(() => {
-		return res.status(201).json({
-			message: "Otp Generated"
-		})
-	})
 	.catch(error => {
 		return res.status(500).json({ error })
 	})
+
+	res.status(200).json({ otp: newOtp })
 }

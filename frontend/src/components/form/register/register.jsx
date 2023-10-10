@@ -49,7 +49,7 @@ const RegisterForm = ({ setShowRegister }) => {
 		}
 		
 		try {
-			const { data } = await register({ password, name: step1.name, email: step1.email })
+			const { data } = await register({ password, name: step1.name, email: step1.email, birthday: `${_months.substring(0, 3)} ${_days}, ${_years}` })
 			dispatch(login(data.result))
 			window.location.reload()
 		}

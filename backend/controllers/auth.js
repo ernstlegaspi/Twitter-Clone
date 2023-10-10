@@ -5,15 +5,22 @@ import User from '../models/user.js'
 
 export const login = async (req, res) => {
 	try {
-		const { email, password } = req.body
+		const { emailUsername, password } = req.body
 
-		if(!email || !password) return res.status(400).json({
+		if(!emailUsername || !password) return res.status(400).json({
 			success: false,
 			result: null,
 			message: 'Invalid Credentials'
 		})
 
-		const user = await User.findOne({ email })
+		let user = null
+
+		if(emailUsername.includes("@") && emailUsername.includes(".com")) {
+			user = await User.findOne({ email: emailUsername })
+		}
+		else {
+			user = await User.findOne({ username: emailUsername })
+		}
 
 		if(!user) return res.status(400).json({
 			success: false,
@@ -29,7 +36,7 @@ export const login = async (req, res) => {
 			message: 'No user found'
 		})
 
-		const token = jwt.sign({ id: user._id }, process.env.KEY, { expiresIn: '15m' })
+		const token = jwt.sign({ id: user._id }, process.env.KEY, { expiresIn: '3h' })
 
 		delete user.password
 
@@ -57,9 +64,11 @@ export const login = async (req, res) => {
 
 export const register = async (req, res) => {
 	try {
-		const { name, email, password } = req.body
+		const { name, email, password, birthday } = req.body
 
-		if(!name || !email || !password) return res.status(400).json({
+		console.log(birthday)
+
+		if(!name || !email || !password || !birthday) return res.status(400).json({
 			success: false,
 			result: null,
 			message: 'Invalid Credentials'
@@ -76,7 +85,7 @@ export const register = async (req, res) => {
 		const salt = await bcrypt.genSalt(12)
 		const hashedPassword = await bcrypt.hash(password, salt)
 
-		const newUser = new User({ name, email, username: name.replace(' ', ''), password: hashedPassword })
+		const newUser = new User({ name, email, username: name.replace(' ', ''), password: hashedPassword, birthday })
 		
 		if(!newUser) return res.status(500).json({
 			success: false,

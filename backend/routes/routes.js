@@ -1,7 +1,7 @@
 import express from 'express'
 
 import { login, register } from '../controllers/auth.js'
-import { generateOtp, getUserLikedTweets, likeTweet, sendOtpToEmail } from '../controllers/user.js'
+import { generateOtp, getUserLikedTweets, likeTweet } from '../controllers/user.js'
 import { addTweet, getTweets, getTweetsByUsername } from '../controllers/tweet.js'
 
 import { verifyToken } from '../middleware/auth.js'
@@ -13,8 +13,7 @@ router.post('/auth/', register)
 router.post('/auth/login', login)
 
 /* Otp Routes */
-router.get('/generateOtp/', generateOtp)
-router.post('/sendOtp/', sendOtpToEmail)
+router.post('/generateOtp/', generateOtp)
 
 /* User Routes */
 router.get('/user/:username', verifyToken, getUserLikedTweets)

@@ -2,10 +2,31 @@
 @tailwind components;
 @tailwind utilities;
 
+html, body {
+	height: 100%;
+	width: 100%
+}
+
 .homepage-text-color {
 	color: #536488
 }
 
+.gray-background {
+	background: #536488
+}
+
 .border-color {
 	border-color: #cfd9de
+}
+
+.purple-button {
+	background: #7856ff;
+}
+
+.purple-border {
+	border-color: #7856ff;
+}
+
+.purple-text {
+	color: #7856ff;
 }

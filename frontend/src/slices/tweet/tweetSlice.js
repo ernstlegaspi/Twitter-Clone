@@ -3,7 +3,8 @@ import { createSlice } from '@reduxjs/toolkit'
 const tweet = createSlice({
 	name: 'Tweet',
 	initialState: {
-		tweets: {}
+		tweets: {},
+		postForm: false,
 	},
 	reducers: {
 		setTweet: (state, action) => {
