@@ -11,38 +11,38 @@ const HomeContent = lazy(() => import('./components/homeContent'))
 
 const LoggedInHome = () => {
 	const dispatch = useDispatch()
-	const { id, name, username } = JSON.parse(localStorage.getItem('userInfo'))
+	// const { id, name, username } = JSON.parse(localStorage.getItem('userInfo'))
 	const [body, setBody] = useState('')
 	const tweets = useSelector(state => state.tweet.tweets)
 	const navigate = useNavigate()
 
-	const handleLogout = () => {
-		dispatch(logout())
-		window.location.reload()
-	}
+	// const handleLogout = () => {
+	// 	dispatch(logout())
+	// 	window.location.reload()
+	// }
 	
-	const handleSubmit = async e => {
-		e.preventDefault()
+	// const handleSubmit = async e => {
+	// 	e.preventDefault()
 
-		await addTweet({ body, userId: id, name, username })
+	// 	await addTweet({ body, userId: id, name, username })
 
-		const { data } = await getAllTweets()
+	// 	const { data } = await getAllTweets()
 
-		dispatch(setTweet(data.result))
-	}
+	// 	dispatch(setTweet(data.result))
+	// }
 
-	const handleProfilePage = () => {
-		dispatch(setTweet(null))
-		navigate(username)
-	}
+	// const handleProfilePage = () => {
+	// 	dispatch(setTweet(null))
+	// 	navigate(username)
+	// }
 
-	const handleLikeTweet = async tweetId => {
-		await likeTweet({ id: tweetId, userId: id })
+	// const handleLikeTweet = async tweetId => {
+	// 	await likeTweet({ id: tweetId, userId: id })
 		
-		const { data } = await getAllTweets()
+	// 	const { data } = await getAllTweets()
 
-		dispatch(setTweet(data.result))
-	}
+	// 	dispatch(setTweet(data.result))
+	// }
 
 	useEffect(() => {
 		const getTweetsApi = async () => {
@@ -57,14 +57,8 @@ const LoggedInHome = () => {
 	return (
 		<>
 			<Suspense fallback={<p>Loading...</p>}>
-				<HomeContent />
+				<HomeContent tweets={tweets} />
 			</Suspense>
-			<div className="mt-2 ml-7">
-				<div className="bg-gray-100 rounded-lg p-y w-[300px] h-[150px]">
-				</div>
-				<div className="mt-4 bg-gray-100 rounded-lg p-y w-[300px] h-[700px]">
-				</div>
-			</div>
 		</>
 		// <div className="flex">
 		// 	<div>

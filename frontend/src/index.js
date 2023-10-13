@@ -19,16 +19,21 @@ import { PersistGate } from "redux-persist/integration/react"
 import App from './App'
 import authReducer from './slices/auth/authSlice'
 import tweetReducer from './slices/tweet/tweetSlice'
+import userReducer from './slices/user/userSlice'
 
 import './index.css'
 
-const persistConfig = { key: "root", storage, version: 1 };
-const auth = persistReducer(persistConfig, authReducer);
-const tweet = persistReducer(persistConfig, tweetReducer);
+const persistConfig = { key: "root", storage, version: 1 }
+
+const auth = persistReducer(persistConfig, authReducer)
+const tweet = persistReducer(persistConfig, tweetReducer)
+const user = persistReducer(persistConfig, userReducer)
+
 const store = configureStore({
 	reducer: {
 		auth,
-		tweet
+		tweet,
+		user
 	},
 	middleware: getDefaultMiddleware => getDefaultMiddleware({
 		serializableCheck: {

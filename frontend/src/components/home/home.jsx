@@ -1,15 +1,17 @@
 import React, { lazy, Suspense } from 'react'
 
+import { useSelector } from 'react-redux'
+
 const LoggedInHome = lazy(() => import('./loggedInHome'))
 const LandingPage = lazy(() => import('./components/landingPage'))
 
 const Home = () => {
-	const isLoggedIn = localStorage.getItem('userInfo')
-
+	const user = useSelector(state => state.user.user)
+	
 	return (
 		<>
 			<Suspense fallback={<p>Loading...</p>}>
-				{isLoggedIn ? <LoggedInHome /> : <LandingPage />}
+				{user ? <LoggedInHome /> : <LandingPage />}
 			</Suspense>
 		</>
 	)

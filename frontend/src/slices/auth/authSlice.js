@@ -14,6 +14,7 @@ const auth = createSlice({
 		logout: (state, action) => {
 			state.userInfo = null
 			localStorage.removeItem('userInfo')
+			localStorage.removeItem('persist:root')
 		},
 		setOtp: (state, action) => {
 			state.otp = action.payload

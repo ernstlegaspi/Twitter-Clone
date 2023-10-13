@@ -14,6 +14,9 @@ export const getAllTweets = () => API.get('tweet/')
 export const getTweetsByUsername = username => API.get(`tweet/${username}`)
 export const getUserLikedTweets = username => API.get(`user/${username}`)
 
+export const getCurrentUser = id => API.get(`user/${id}`)
+export const updateUserTweetCount = id => API.put(`user/updateTweetCount`, id)
+
 export const loginApi = data => API.post('auth/login', data)
 export const register = data => API.post('auth/', data)
 

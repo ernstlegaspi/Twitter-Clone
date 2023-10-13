@@ -75,9 +75,10 @@ const RegisterForm = ({ setShowRegister }) => {
 			setLoading(true)
 
 			const res = await generateOtp({ email: step1.email, name: step1.name })
-			const { otp } = res.data
 			
-			dispatch(setOtp(otp))
+			const { result } = res.data
+			
+			dispatch(setOtp(result.otp))
 			
 			startTransition(() => setCount(prev => prev + 1))
 
@@ -93,6 +94,9 @@ const RegisterForm = ({ setShowRegister }) => {
 		startTransition(() => setCount(prev => prev + 1))
 
 		if(count === 4) {
+			console.log(verificationOtp)
+			console.log(generatedOtp)
+
 			if(verificationOtp.length !== 6 || verificationOtp === '' || verificationOtp !== generatedOtp) {
 				toast.error('Enter a valid otp')
 				startTransition(() => setCount(prev => prev - 1))
@@ -112,7 +116,9 @@ const RegisterForm = ({ setShowRegister }) => {
 	return (
 		<div className="bg-black/40 inset-0 absolute z-20 flex items-center justify-center">
 			<div className="bg-white h-[650px] w-[600px] rounded-[15px] pt-2 pl-2">
-				{loading ? <PropagateLoader color="#0EA5E9" /> : (
+				{loading ? <div className="w-full h-full flex items-center justify-center">
+						<PropagateLoader color="#0EA5E9" />
+					</div> : (
 					<div className="flex h-full">
 						<div onClick={handleBack} className="hover:bg-gray-200 rounded-full p-2 w-max h-max cursor-pointer">
 							{count === 1 ? <AiOutlineClose size={19} /> : <BsArrowLeft size={19} /> }

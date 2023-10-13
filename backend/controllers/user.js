@@ -5,6 +5,23 @@ import otp from 'otp-generator'
 import nodeMailer from 'nodemailer'
 import mailGen from 'mailgen'
 
+import { badReq, serverError, success } from '../utils/index.js'
+
+export const getCurrentUser = async (req, res) => {
+	try {
+		const { id } = req.params
+		
+		const user = await User.findById({ _id: id })
+
+		if(!user) return serverError(res)
+
+		success(res, user, 'Current user retrieved')
+	}
+	catch(error) {
+		serverError(res)
+	}
+}
+
 export const getUserLikedTweets = async (req, res) => {
 	try {
 		const { username } = req.params
@@ -12,73 +29,56 @@ export const getUserLikedTweets = async (req, res) => {
 		const user = await User.findOne({ username })
 		const tweets = await Tweet.find({ likedUserId: user._id.toString() })
 
-		res.status(200).json({
-			success: true,
-			result: tweets,
-			message: 'Successfully Fetched Liked Tweets'
-		})
+		success(res, tweets, 'Successfully Fetched Liked Tweets')
 	}
 	catch(error) {
-		res.status(500).json({
-			success: false,
-			result: null,
-			message: 'Internal Server Error',
-			error
-		})
+		serverError(res)
 	}
 }
-
 export const likeTweet = async (req, res) => {
 	try {
 		const { id, userId } = req.body
 
-		if(!id) return res.status(400).json({
-			success: false,
-			result: null,
-			message: 'Not a valid tweet'
-		})
-
-		if(!userId) return res.status(400).json({
-			success: false,
-			result: null,
-			message: 'User not logged in'
-		})
+		if(!id) return badReq(res, 'Not a valid tweet')
+		
+		if(!userId) return badReq(res, 'User not logged in')
 
 		const tweet = await Tweet.findByIdAndUpdate(id,
 			{ $push: { likedUserId: userId } },
 			{ new: true }
 		)
 
-		if(!tweet) return res.status(500).json({
-			success: false,
-			result: null,
-			message: 'Internal Server Error'
-		})
+		if(!tweet) return serverError(res)
 
-		res.status(200).json({
-			success: true,
-			result: tweet,
-			message: 'Tweet liked'
-		})
+		success(res, tweet, 'Tweet liked')
 	}
 	catch(error) {
-		res.status(500).json({
-			success: false,
-			result: null,
-			message: 'Internal Server Error',
-			error
-		})
+		serverError(res)
 	}
 }
 
+export const updateUserTweetCount = async (req, res) => {
+	try {
+		const { id } = req.body
+
+		const user = await User.findById({ _id: id })
+
+		const updatedUser = await User.findOneAndUpdate({ _id: id }, { tweetCount: user.tweetCount + 1 })
+
+		if(!user) return serverError(res)
+
+		success(res, updatedUser, 'Tweet count updated')
+	}
+	catch(error) {
+		serverError(res)
+	}
+}
+
+// OTP
 export const generateOtp = (req, res) => {
 	const newOtp = otp.generate(6, { lowerCaseAlphabets: false, upperCaseAlphabets: false, specialChars: false })
 
-	if(!newOtp) return res.status(500).json({
-		success: false,
-		result: null,
-		message: 'Internal Server Errorr'
-	})
+	if(!newOtp) return serverError(res)
 
 	const { name, email } = req.body
 
@@ -125,9 +125,7 @@ export const generateOtp = (req, res) => {
 	}
 
 	transporter.sendMail(message)
-	.catch(error => {
-		return res.status(500).json({ error })
-	})
+	.catch(error => serverError(res))
 
-	res.status(200).json({ otp: newOtp })
+	success(res, { otp: newOtp }, 'OTP Generated')
 }

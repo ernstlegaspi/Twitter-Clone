@@ -1,50 +1,32 @@
 import Tweet from '../models/tweet.js'
+import User from '../models/user.js'
+
+import { badReq, serverError, success } from '../utils/index.js'
 
 export const addTweet = async (req, res) => {
 	try {
 		const { userId, name, body, username } = req.body
 
-		if(!userId || !name || !body || !username) return res.status(400).json({
-			success: false,
-			result: null,
-			message: 'Invalid credentials'
-		})
+		if(!userId || !name || !body || !username) return badReq(res, 'Invalid credentials')
 
 		const newTweet = new Tweet({ userId, name, username, body })
 		const result = await newTweet.save()
 
-		res.status(201).json({
-			success: true,
-			result,
-			message: 'Tweet Created'
-		})
+		success(res, result, 'Tweets Created' , 201)
 	}
 	catch(error) {
-		res.status(500).json({
-			success: false,
-			result: null,
-			error,
-			message: 'Internal Server Error'
-		})
+		serverError(res)
 	}
 }
+
 export const getTweets = async (req, res) => {
 	try {
-		const tweets = await Tweet.find()
-
-		res.status(200).json({
-			success: true,
-			result: tweets,
-			message: 'Tweets retrieved'
-		})
+		const tweets = await Tweet.find().sort({ createAt: -1 })
+		
+		success(res, tweets, 'Tweets Retrieved')
 	}
 	catch(error) {
-		res.status(500).json({
-			success: false,
-			result: null,
-			error,
-			message: 'Internal Server Error'
-		})
+		serverError(res)
 	}
 }
 
@@ -54,18 +36,9 @@ export const getTweetsByUsername = async (req, res) => {
 
 		const tweets = await Tweet.find({ username })
 
-		res.status(200).json({
-			success: true,
-			result: tweets,
-			message: 'Tweets retrieved'
-		})
+		success(res, tweets, 'Tweets Retrieved')
 	}
 	catch(error) {
-		res.status(500).json({
-			success: false,
-			result: null,
-			error,
-			message: 'Internal Server Error'
-		})
+		serverError(res)
 	}
 }
