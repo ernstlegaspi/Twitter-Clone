@@ -1,7 +1,7 @@
 import express from 'express'
 
 import { login, register } from '../controllers/auth.js'
-import { generateOtp, getCurrentUser, getUserLikedTweets, likeTweet, updateUserTweetCount } from '../controllers/user.js'
+import { generateOtp, getCurrentUser, getUserLikedTweets, likeTweet, unlikeTweet, updateUserTweetCount } from '../controllers/user.js'
 import { addTweet, getTweets, getTweetsByUsername } from '../controllers/tweet.js'
 
 import { verifyToken } from '../middleware/auth.js'
@@ -24,6 +24,7 @@ router.put('/user/updateTweetCount', verifyToken, updateUserTweetCount)
 router.get('/tweet/', verifyToken, getTweets)
 router.post('/tweet/', verifyToken, addTweet)
 router.put('/tweet/', verifyToken, likeTweet)
+router.put('/tweet/unlike', verifyToken, unlikeTweet)
 router.get('/tweet/:username', getTweetsByUsername)
 
 export default router

@@ -12,6 +12,12 @@ export const badReq = (res, message) => res.status(400).json({
 	message
 })
 
+export const clientError = (res, message, code = 400) => res.status(code).json({
+	success: false,
+	result: null,
+	message
+})
+
 export const conflict = (res, message) => res.status(409).json({
 	success: false,
 	result: null,

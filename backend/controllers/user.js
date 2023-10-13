@@ -5,15 +5,17 @@ import otp from 'otp-generator'
 import nodeMailer from 'nodemailer'
 import mailGen from 'mailgen'
 
-import { badReq, serverError, success } from '../utils/index.js'
+import { clientError, serverError, success } from '../utils/index.js'
 
 export const getCurrentUser = async (req, res) => {
 	try {
 		const { id } = req.params
+
+		if(!id) return clientError(res, 'Current user id not found')
 		
 		const user = await User.findById({ _id: id })
 
-		if(!user) return serverError(res)
+		if(!user) return clientError(res, 'User not found', 404)
 
 		success(res, user, 'Current user retrieved')
 	}
@@ -26,8 +28,15 @@ export const getUserLikedTweets = async (req, res) => {
 	try {
 		const { username } = req.params
 
+		if(!username) return clientError(res, 'Username undefined')
+
 		const user = await User.findOne({ username })
+
+		if(!user) return clientError(res, 'User not found', 404)
+
 		const tweets = await Tweet.find({ likedUserId: user._id.toString() })
+
+		if(!tweets) return clientError(res, 'No liked tweets', 404)
 
 		success(res, tweets, 'Successfully Fetched Liked Tweets')
 	}
@@ -39,18 +48,38 @@ export const likeTweet = async (req, res) => {
 	try {
 		const { id, userId } = req.body
 
-		if(!id) return badReq(res, 'Not a valid tweet')
+		if(!id) return clientError(res, 'Tweet id not found')
 		
-		if(!userId) return badReq(res, 'User not logged in')
+		if(!userId) return clientError(res, 'User not logged in')
 
 		const tweet = await Tweet.findByIdAndUpdate(id,
 			{ $push: { likedUserId: userId } },
 			{ new: true }
 		)
 
-		if(!tweet) return serverError(res)
+		if(!tweet) return clientError(res, 'Can not like tweet')
 
 		success(res, tweet, 'Tweet liked')
+	}
+	catch(error) {
+		serverError(res)
+	}
+}
+
+export const unlikeTweet = async (req, res) => {
+	try {
+		const { id, userId } = req.body
+
+		if(!id || !userId) return clientError(res, 'Tweet id and/or userId undefined')
+
+		const likedTweet = await Tweet.findByIdAndUpdate(id,
+			{ $pull: { likedUserId: userId } },
+			{ new: true, multi: true }
+		)
+		
+		if(!likedTweet) return clientError(res, 'Can not unlike tweet')
+
+		success(res, likedTweet, 'Successfully unliked tweet')
 	}
 	catch(error) {
 		serverError(res)

@@ -10,6 +10,7 @@ API.interceptors.request.use(req => {
 
 export const addTweet = data => API.post('tweet/', data)
 export const likeTweet = data => API.put('tweet/', data)
+export const unlikeTweet = data => API.put('tweet/unlike', data)
 export const getAllTweets = () => API.get('tweet/')
 export const getTweetsByUsername = username => API.get(`tweet/${username}`)
 export const getUserLikedTweets = username => API.get(`user/${username}`)

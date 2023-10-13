@@ -7,7 +7,7 @@ import { BsBookmark } from 'react-icons/bs'
 import { FaRegComment } from 'react-icons/fa'
 import { useSelector } from 'react-redux'
 
-import { likeTweet } from '../../api/api'
+import { likeTweet, unlikeTweet } from '../../api/api'
 
 const TweetCard = ({ tweet }) => {
 	const currentHeartIcon = useRef(AiOutlineHeart)
@@ -35,14 +35,28 @@ const TweetCard = ({ tweet }) => {
 	}
 
 	const handleHeartButton = async () => {
+		if(isLiked) {
+			const unlike = await unlikeTweet({ id: tweet._id, userId: user._id })
+			
+			if(unlike.data.message !== 'Successfully unliked tweet') return
+
+			currentHeartIcon.current = AiOutlineHeart
+			currentLikeCount.current--
+			// currentLikeCount.current = result.likedUserId.length
+			setIsLiked(false)
+
+			return
+		}
+
+		// Like Tweet logic
 		const { data } = await likeTweet({ id: tweet._id, userId: user._id })
 		const userId = data.result.likedUserId.map(usersId => usersId === user._id)
 
-		if(userId) {
-			currentHeartIcon.current = AiFillHeart
-			currentLikeCount.current = data.result.likedUserId.length
-			setIsLiked(true)
-		}
+		if(!userId) return
+
+		currentHeartIcon.current = AiFillHeart
+		currentLikeCount.current = data.result.likedUserId.length
+		setIsLiked(true)
 	}
 
 	useEffect(() => {
