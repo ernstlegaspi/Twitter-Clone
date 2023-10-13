@@ -1,23 +1,31 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 
 import moment from 'moment'
 
-import { tweetCardIcons } from '../../constants'
-
-import { AiOutlineHeart, AiOutlineRetweet } from 'react-icons/ai'
+import { AiFillHeart, AiOutlineHeart, AiOutlineRetweet } from 'react-icons/ai'
 import { BsBookmark } from 'react-icons/bs'
 import { FaRegComment } from 'react-icons/fa'
+import { useSelector } from 'react-redux'
+
+import { likeTweet } from '../../api/api'
 
 const TweetCard = ({ tweet }) => {
+	const currentHeartIcon = useRef(AiOutlineHeart)
+	const currentLikeCount = useRef(0)
+
+	const [isLiked, setIsLiked] = useState(false)
+
+	const user = useSelector(state => state.user.user)
+
 	const date = moment(tweet.createdAt).fromNow()
 
 	const cond = text => date.includes(text)
-	
-	const Buttons = (bgColor, color, Icon, text) => {
+
+	const Buttons = (onClick, bgColor, color, Icon, isActive, text) => {
 		const [hovered, setHovered] = useState(false)
 
 		return (
-			<div onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)} className={`${hovered ? `${color}` : 'text-gray-500'} flex items-center cursor-pointer`}>
+			<div onClick={onClick} onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)} className={`${hovered || isActive ? `${color}` : 'text-gray-500'} flex items-center cursor-pointer`}>
 				<div className={`${hovered ? `${bgColor}` : ''} w-max rounded-full p-2 transition-all`}>
 					<Icon size={20} />
 				</div>
@@ -25,6 +33,27 @@ const TweetCard = ({ tweet }) => {
 			</div>
 		)
 	}
+
+	const handleHeartButton = async () => {
+		const { data } = await likeTweet({ id: tweet._id, userId: user._id })
+		const userId = data.result.likedUserId.map(usersId => usersId === user._id)
+
+		if(userId) {
+			currentHeartIcon.current = AiFillHeart
+			currentLikeCount.current = data.result.likedUserId.length
+			setIsLiked(true)
+		}
+	}
+
+	useEffect(() => {
+		const userId = tweet.likedUserId.map(usersId => usersId === user._id)
+		
+		if(userId[0]) {
+			currentHeartIcon.current = AiFillHeart
+			currentLikeCount.current = tweet.likedUserId.length
+			setIsLiked(true)
+		}
+	}, [tweet.likedUserId, tweet._id, user._id])
 	
 	return (
 		<div className="border-t border-color hover:bg-gray-100/50 cursor-pointer w-full transition-all py-2">
@@ -44,10 +73,10 @@ const TweetCard = ({ tweet }) => {
 					</div>
 					<p className="leading-5 text-slate-600">{tweet.body}</p>
 					<div className="w-[90%] flex justify-between mt-3">
-						{Buttons('bg-sky-500/10', 'text-sky-500', FaRegComment, '')}
-						{Buttons('bg-green-400/10', 'text-green-400', AiOutlineRetweet, '')}
-						{Buttons('bg-pink-500/10', 'text-pink-500', AiOutlineHeart, '')}
-						{Buttons('bg-yellow-400/10', 'text-yellow-400', BsBookmark, '')}
+						{Buttons(() => {}, 'bg-sky-500/10', 'text-sky-500', FaRegComment, false, '')}
+						{Buttons(() => {}, 'bg-green-400/10', 'text-green-400', AiOutlineRetweet, false, '')}
+						{Buttons(handleHeartButton, 'bg-pink-500/10', 'text-pink-500', currentHeartIcon.current, isLiked, currentLikeCount.current < 1 ? '' : currentLikeCount.current)}
+						{Buttons(() => {}, 'bg-yellow-400/10', 'text-yellow-400', BsBookmark, false, '')}
 					</div>
 				</div>
 			</div>

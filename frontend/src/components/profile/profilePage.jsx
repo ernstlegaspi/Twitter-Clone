@@ -93,9 +93,7 @@ const ProfilePage = ({ user }) => {
 			</div>
 			<div className="mt-[162px] relative z-20">
 				{noTweets ? null : (
-					tweets.map(tweet => (
-						<TweetCard key={tweet._id} tweet={tweet} />
-					))
+					tweets.map(tweet => <TweetCard key={tweet._id} tweet={tweet} />)
 				)}
 			</div>
 		</div>

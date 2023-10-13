@@ -21,7 +21,7 @@ export const addTweet = async (req, res) => {
 
 export const getTweets = async (req, res) => {
 	try {
-		const tweets = await Tweet.find().sort({ createAt: -1 })
+		const tweets = await Tweet.find().sort({ createdAt: -1 })
 		
 		success(res, tweets, 'Tweets Retrieved')
 	}
