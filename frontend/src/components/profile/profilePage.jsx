@@ -1,16 +1,23 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 
 import moment from 'moment'
 import { useDispatch, useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
 import { AiOutlineCalendar } from 'react-icons/ai'
 import { FiArrowLeft } from 'react-icons/fi'
+import { PulseLoader } from 'react-spinners'
 
 import { getTweetsByUsername, getUserLikedTweets } from '../../api/api'
 import { setTweet } from '../../slices/tweet/tweetSlice'
 import TweetCard from '../cards/tweetCard'
 
 const ProfilePage = ({ user }) => {
+	const [postTab, setPostTab] = useState(true)
+	const [repliesTab, setRepliesTab] = useState(false)
+	const [highlightsTab, setHighlightsTab] = useState(false)
+	const [mediaTab, setMediaTab] = useState(false)
+	const [likesTab, setLikesTab] = useState(false)
+	const [loading, setLoading] = useState(false)
 	const params = useParams()
 	const dispatch = useDispatch()
 	const tweets = useSelector(state => state.tweet.tweets)
@@ -22,18 +29,45 @@ const ProfilePage = ({ user }) => {
 			const { data } = await getTweetsByUsername(params.username)
 
 			dispatch(setTweet(data.result))
+			handleActiveTab(true, false, false, false, false)
 		}
 
 		getUserTweets()
 	}, [params.username, dispatch])
 
-	// const handleCheckLikedTweets = async () => {
-	// 	dispatch(setTweet(null))
+	const handleActiveTab = (post, replies, highlights, media, likes) => {
+		setPostTab(post)
+		setRepliesTab(replies)
+		setHighlightsTab(highlights)
+		setMediaTab(media)
+		setLikesTab(likes)
+	}
 
-	// 	const { data } = await getUserLikedTweets(params.username)
+	const handlePostButton = async () => {
+		if(postTab) return
+		
+		handleActiveTab(true, false, false, false, false)
+		setLoading(true)
 
-	// 	dispatch(setTweet(data.result))
-	// }
+		getTweetsByUsername(params.username)
+		.then(({ data }) => {
+			setLoading(false)
+			dispatch(setTweet(data.result))
+		})
+	}
+
+	const handleLikesButton = async () => {
+		if(likesTab) return
+		
+		handleActiveTab(false, false, false, false, true)
+		setLoading(true)
+
+		getUserLikedTweets(params.username)
+		.then(({ data }) => {
+			setLoading(false)
+			dispatch(setTweet(data.result))
+		})
+	}
 
 	if(!user) return null
 
@@ -83,34 +117,20 @@ const ProfilePage = ({ user }) => {
 						{formattedText(user.followers, user.followers < 2 ? "Follower" : "Followers")}
 					</div>
 					<div className={`flex justify-between items-center mt-3 ${noTweets ? 'border-b' : ''} border-color`}>
-						{menu(() => {}, "Posts", true, 'w-[60px]')}
-						{menu(() => {}, "Replies", false, 'w-[70px]')}
-						{menu(() => {}, "Highlights", false, 'w-[90px]')}
-						{menu(() => {}, "Media", false, 'w-[60px]')}
-						{menu(() => {}, "Likes", false, 'w-[50px]')}
+						{menu(handlePostButton, "Posts", postTab, 'w-[60px]')}
+						{menu(() => {}, "Replies", repliesTab, 'w-[70px]')}
+						{menu(() => {}, "Highlights", highlightsTab, 'w-[90px]')}
+						{menu(() => {}, "Media", mediaTab, 'w-[60px]')}
+						{menu(handleLikesButton, "Likes", likesTab, 'w-[50px]')}
 					</div>
 				</div>
 			</div>
 			<div className="mt-[162px] relative z-20">
-				{noTweets ? null : (
+				{noTweets ? null : loading ? <div className="w-full pt-10 flex items-center justify-center"><PulseLoader color="#0EA5E9" /></div> : (
 					tweets.map(tweet => <TweetCard key={tweet._id} tweet={tweet} />)
 				)}
 			</div>
 		</div>
-		// <div className="flex">
-		// 	<div>
-		// 		<button onClick={handleCheckLikedTweets}>Checked liked tweets</button>
-		// 	</div>
-		// 	<div className="ml-5">
-		// 		<div>{tweets ? tweets.map(tweet => (
-		// 			<div key={tweet._id}>
-		// 				<p>{tweet.username}</p>
-		// 				<p>{tweet.body}</p>
-		// 				<p>{tweet.name}</p>
-		// 			</div>
-		// 		)) : null}</div>
-		// 	</div>
-		// </div>
 	)
 }
 

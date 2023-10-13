@@ -1,4 +1,4 @@
-import React, { lazy, Suspense, useEffect, useState } from 'react'
+import React, { lazy, Suspense, useEffect, useRef, useState } from 'react'
 
 import toast, { Toaster } from 'react-hot-toast'
 import { useDispatch, useSelector } from 'react-redux'
@@ -6,6 +6,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom'
 
 import { getCurrentUser } from './api/api'
 import { setCurrentUser } from './slices/user/userSlice'
+import LogoutModal from './components/modals/logoutModal'
 
 const Home = lazy(() => import('./components/home/home'))
 const ProfilePage = lazy(() => import('./components/profile/profilePage'))
@@ -15,13 +16,18 @@ const PostForm = lazy(() => import('./components/modals/postForm'))
 
 const App = () => {
 	const [showPostForm, setShowPostForm] = useState(false)
+	const [showLogoutModal, setShowLogoutModal] = useState(false)
 	const userInfo = JSON.parse(localStorage.getItem('userInfo'))
+	const userInfoRef = useRef(userInfo)
 
 	const user = useSelector(state => state.user.user)
 	
 	const dispatch = useDispatch()
 
+
 	useEffect(() => {
+		if(!userInfoRef.current) return
+		
 		const currentUser = async () => {
 			try {
 				const { data } = await getCurrentUser(userInfo?.id)
@@ -47,8 +53,9 @@ const App = () => {
 			<BrowserRouter>
 				<Toaster />
 				<Suspense fallback={<p>Loading...</p>}>
-					{user ? <Sidebar showPostForm={setShowPostForm} user={user} /> : null}
+					{user ? <Sidebar showLogoutModal={setShowLogoutModal} showPostForm={setShowPostForm} user={user} /> : null}
 					{showPostForm ? <PostForm showPostForm={setShowPostForm} /> : null}
+					{showLogoutModal ? <LogoutModal showLogoutModal={setShowLogoutModal} /> : null}
 					<Routes>
 						<Route path='/' element={<Home />} />
 						<Route path='/:username' element={<ProfilePage user={user} />} />

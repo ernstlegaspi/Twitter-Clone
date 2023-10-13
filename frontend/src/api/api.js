@@ -13,7 +13,7 @@ export const likeTweet = data => API.put('tweet/', data)
 export const unlikeTweet = data => API.put('tweet/unlike', data)
 export const getAllTweets = () => API.get('tweet/')
 export const getTweetsByUsername = username => API.get(`tweet/${username}`)
-export const getUserLikedTweets = username => API.get(`user/${username}`)
+export const getUserLikedTweets = username => API.get(`user/likedTweets/${username}`)
 
 export const getCurrentUser = id => API.get(`user/${id}`)
 export const updateUserTweetCount = id => API.put(`user/updateTweetCount`, id)

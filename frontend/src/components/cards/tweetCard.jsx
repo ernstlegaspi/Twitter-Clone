@@ -42,7 +42,6 @@ const TweetCard = ({ tweet }) => {
 
 			currentHeartIcon.current = AiOutlineHeart
 			currentLikeCount.current--
-			// currentLikeCount.current = result.likedUserId.length
 			setIsLiked(false)
 
 			return

@@ -17,7 +17,7 @@ router.post('/generateOtp/', generateOtp)
 
 /* User Routes */
 router.get('/user/:id', verifyToken, getCurrentUser)
-router.get('/user/:username', verifyToken, getUserLikedTweets)
+router.get('/user/likedTweets/:username', verifyToken, getUserLikedTweets)
 router.put('/user/updateTweetCount', verifyToken, updateUserTweetCount)
 
 /* Tweet Routes */
