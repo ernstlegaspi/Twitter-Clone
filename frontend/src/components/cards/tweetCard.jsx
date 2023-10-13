@@ -21,12 +21,12 @@ const TweetCard = ({ tweet }) => {
 
 	const cond = text => date.includes(text)
 
-	const Buttons = (onClick, bgColor, color, Icon, isActive, text) => {
+	const Buttons = (onClick, bgColor, color, Icon, isActive, text, canBeHovered = true) => {
 		const [hovered, setHovered] = useState(false)
 
 		return (
-			<div onClick={onClick} onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)} className={`${hovered || isActive ? `${color}` : 'text-gray-500'} flex items-center cursor-pointer`}>
-				<div className={`${hovered ? `${bgColor}` : ''} w-max rounded-full p-2 transition-all`}>
+			<div onClick={!canBeHovered ? null : onClick} onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)} className={`${!canBeHovered ? 'text-gray-300' : hovered || isActive ? `${color}` : 'text-gray-500'} flex items-center cursor-pointer`}>
+				<div className={`${!canBeHovered ? '' : hovered ? `${bgColor}` : ''} w-max rounded-full p-2 transition-all`}>
 					<Icon size={20} />
 				</div>
 				<p>{text}</p>
@@ -87,7 +87,7 @@ const TweetCard = ({ tweet }) => {
 					<p className="leading-5 text-slate-600">{tweet.body}</p>
 					<div className="w-[90%] flex justify-between mt-3">
 						{Buttons(() => {}, 'bg-sky-500/10', 'text-sky-500', FaRegComment, false, '')}
-						{Buttons(() => {}, 'bg-green-400/10', 'text-green-400', AiOutlineRetweet, false, '')}
+						{Buttons(() => {}, 'bg-green-400/10', 'text-green-400', AiOutlineRetweet, false, '', tweet.userId !== user._id)}
 						{Buttons(handleHeartButton, 'bg-pink-500/10', 'text-pink-500', currentHeartIcon.current, isLiked, currentLikeCount.current < 1 ? '' : currentLikeCount.current)}
 						{Buttons(() => {}, 'bg-yellow-400/10', 'text-yellow-400', BsBookmark, false, '')}
 					</div>

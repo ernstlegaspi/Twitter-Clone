@@ -46,7 +46,7 @@ const App = () => {
 		}
 
 		currentUser()
-	}, [userInfo?.id, dispatch])
+	}, [userInfoRef, userInfo?.id, dispatch])
 
 	return (
 		<div className={`h-screen w-full flex ${user ? '' : 'justify-center'} relative`}>
