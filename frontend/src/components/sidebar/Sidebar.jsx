@@ -12,7 +12,36 @@ const Sidebar = ({ showLogoutModal, showPostForm, user }) => {
 	// eslint-disable-next-line
 	const [_, startTransition] = useTransition()
 	const navigate = useNavigate()
-	
+
+	const handleClickCondition = label => {
+		switch(label) {
+			case 'Home':
+				navigate('/')
+				break
+			case 'Explore':
+				navigate('/Explore')
+				break
+			case 'Notifications':
+				navigate('/Notifications')
+				break
+			case 'Messages':
+				navigate('/Messages')
+				break
+			case 'Lists':
+				navigate('/Lists')
+				break
+			case 'Bookmarks':
+				navigate('/Bookmarks')
+				break
+			case 'Communities':
+				navigate('/Communities')
+				break
+			default:
+				navigate(user.username)
+				break;
+		}
+	}
+
 	return (
 		<div className="w-[30.8%] flex justify-end relative">
 			<div className="w-[265px] mt-[2px] relative">
@@ -25,7 +54,7 @@ const Sidebar = ({ showLogoutModal, showPostForm, user }) => {
 				</div>
 				{sidebarItems.map((item, index) => {
 					return(
-						<SidebarItem onClick={item.label === 'Profile' ? () => navigate(user.username) : () => {}} key={index} Icon={item.icon} label={item.label} />
+						<SidebarItem onClick={() => handleClickCondition(item.label)} key={index} Icon={item.icon} label={item.label} username={user.username} />
 					)
 				})}
 				<button onClick={() => startTransition(() => showPostForm(true))} className="mt-7 font-bold text-white rounded-full purple-button hover:bg-indigo-600 transition-all w-[85%] py-[10px] text-lg">Post</button>

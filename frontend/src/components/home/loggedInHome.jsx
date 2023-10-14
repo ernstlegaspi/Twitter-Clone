@@ -3,7 +3,7 @@ import React, { lazy, Suspense, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import { getAllTweets } from '../../api/api'
-import { setTweet } from '../../slices/tweet/tweetSlice'
+import { setTweets } from '../../slices/tweet/tweetSlice'
 
 const HomeContent = lazy(() => import('./components/homeContent'))
 
@@ -15,7 +15,7 @@ const LoggedInHome = () => {
 		const getTweetsApi = async () => {
 			const { data } = await getAllTweets()
 
-			dispatch(setTweet(data.result))
+			dispatch(setTweets(data.result))
 		}
 
 		getTweetsApi()

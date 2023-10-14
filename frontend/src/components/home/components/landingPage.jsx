@@ -6,8 +6,8 @@ import { AiFillApple, AiOutlineGoogle } from 'react-icons/ai'
 
 import 'react-lazy-load-image-component/src/effects/blur.css'
 
-const LoginModal = lazy(() => import('../../form/login/login'))
-const RegisterModal = lazy(() => import('../../form/register/register'))
+const LoginModal = lazy(() => import('../../modals/loginModal'))
+const RegisterModal = lazy(() => import('../../modals/register/registerModal'))
 
 const LandingPage = () => {
 	const [showLogin, setShowLogin] = useState(false)

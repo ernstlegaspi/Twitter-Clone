@@ -1,6 +1,6 @@
 import { AiOutlineMail, AiOutlineSchedule, AiOutlineSearch } from 'react-icons/ai'
-import { BiPoll, BiSolidHomeCircle } from 'react-icons/bi'
-import { BsBookmark, BsCardImage, BsEmojiSmile, BsFiletypeGif, BsPeople, BsPerson } from 'react-icons/bs'
+import { BiPoll } from 'react-icons/bi'
+import { BsBookmark, BsCardImage, BsEmojiSmile, BsFiletypeGif, BsHouseDoor, BsPeople, BsPerson } from 'react-icons/bs'
 import { GrNotification } from 'react-icons/gr'
 import { IoLocationOutline } from 'react-icons/io5'
 import { RiFileList2Line } from 'react-icons/ri'
@@ -87,7 +87,7 @@ export const years = [
 
 export const sidebarItems = [
 	{
-		icon: BiSolidHomeCircle,
+		icon: BsHouseDoor,
 		label: 'Home'
 	},
 	{

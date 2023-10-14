@@ -2,13 +2,13 @@ import React, { useEffect, useState } from 'react'
 
 import moment from 'moment'
 import { useDispatch, useSelector } from 'react-redux'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { AiOutlineCalendar } from 'react-icons/ai'
 import { FiArrowLeft } from 'react-icons/fi'
 import { PulseLoader } from 'react-spinners'
 
 import { getTweetsByUsername, getUserLikedTweets } from '../../api/api'
-import { setTweet } from '../../slices/tweet/tweetSlice'
+import { setTweets } from '../../slices/tweet/tweetSlice'
 import TweetCard from '../cards/tweetCard'
 
 const ProfilePage = ({ user }) => {
@@ -21,6 +21,7 @@ const ProfilePage = ({ user }) => {
 	const params = useParams()
 	const dispatch = useDispatch()
 	const tweets = useSelector(state => state.tweet.tweets)
+   const navigate = useNavigate()
 	
 	let noTweets = !tweets || Object.keys(tweets).length === 0 || tweets.length === 0
 
@@ -28,7 +29,7 @@ const ProfilePage = ({ user }) => {
 		const getUserTweets = async () => {
 			const { data } = await getTweetsByUsername(params.username)
 
-			dispatch(setTweet(data.result))
+			dispatch(setTweets(data.result))
 			handleActiveTab(true, false, false, false, false)
 		}
 
@@ -52,7 +53,7 @@ const ProfilePage = ({ user }) => {
 		getTweetsByUsername(params.username)
 		.then(({ data }) => {
 			setLoading(false)
-			dispatch(setTweet(data.result))
+			dispatch(setTweets(data.result))
 		})
 	}
 
@@ -65,7 +66,7 @@ const ProfilePage = ({ user }) => {
 		getUserLikedTweets(params.username)
 		.then(({ data }) => {
 			setLoading(false)
-			dispatch(setTweet(data.result))
+			dispatch(setTweets(data.result))
 		})
 	}
 
@@ -84,7 +85,7 @@ const ProfilePage = ({ user }) => {
 	return (
 		<div className="h-full w-[600px] border border-y-0 border-color">
 			<div className="flex items-center py-1 px-2">
-				<div className="cursor-pointer transition-all hover:bg-gray-200 rounded-full w-max h-max p-2 mr-3">
+				<div onClick={() => navigate('/')} className="cursor-pointer transition-all hover:bg-gray-200 rounded-full w-max h-max p-2 mr-3">
 					<FiArrowLeft size={20} />
 				</div>
 				<div className="flex justify-between items-center w-full">

@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux'
 
 import { postFormBottomIcon } from '../../constants'
 import { addTweet, getAllTweets, updateUserTweetCount } from '../../api/api'
-import { setTweet } from '../../slices/tweet/tweetSlice'
+import { setTweets } from '../../slices/tweet/tweetSlice'
 import { toast } from 'react-hot-toast'
 
 const PostForm = ({ showPostForm }) => {
@@ -32,7 +32,7 @@ const PostForm = ({ showPostForm }) => {
 
 		const { data } = await getAllTweets()
 		
-		dispatch(setTweet(data.result))
+		dispatch(setTweets(data.result))
 	}
 
 	const handleBodyChange = e => {

@@ -7,11 +7,15 @@ import { BsBookmark } from 'react-icons/bs'
 import { FaRegComment } from 'react-icons/fa'
 import { useSelector } from 'react-redux'
 
+import { useNavigate, useParams } from 'react-router-dom'
+
 import { likeTweet, unlikeTweet } from '../../api/api'
 
 const TweetCard = ({ tweet }) => {
 	const currentHeartIcon = useRef(AiOutlineHeart)
 	const currentLikeCount = useRef(0)
+	const navigate = useNavigate()
+	const { id } = useParams()
 
 	const [isLiked, setIsLiked] = useState(false)
 
@@ -49,7 +53,7 @@ const TweetCard = ({ tweet }) => {
 
 		// Like Tweet logic
 		const { data } = await likeTweet({ id: tweet._id, userId: user._id })
-		const userId = data.result.likedUserId.map(usersId => usersId === user._id)
+		const userId = data.result.likedUserId.filter(usersId => usersId === user._id)
 
 		if(!userId) return
 
@@ -59,40 +63,64 @@ const TweetCard = ({ tweet }) => {
 	}
 
 	useEffect(() => {
-		const userId = tweet.likedUserId.map(usersId => usersId === user._id)
+		const userId = tweet.likedUserId.filter(usersId => usersId === user._id)
 		
 		if(userId[0]) {
 			currentHeartIcon.current = AiFillHeart
 			currentLikeCount.current = tweet.likedUserId.length
 			setIsLiked(true)
+			
+			return
 		}
+
+		currentLikeCount.current = tweet.likedUserId.length
 	}, [tweet.likedUserId, tweet._id, user._id])
 	
 	return (
-		<div className="border-t border-color hover:bg-gray-100/50 cursor-pointer w-full transition-all py-2">
+		<div onClick={() => id ? null : navigate(`${tweet.username}/status/${tweet._id}`)} className={`border-b border-color ${id ? '' : 'hover:bg-gray-100/50'} ${id ? '' : 'cursor-pointer'} w-full transition-all py-2`}>
 			<div className="flex w-[95%] mx-auto">
 				<p className="bg-indigo-600 rounded-full text-white py-[6px] px-[15px] w-max h-max text-xl mr-3">{tweet.name.charAt(0)}</p>
 				<div className="w-full">
-					<div className="flex">
+					<div className={`flex ${id ? 'flex-col' : ''}`}>
 						<p className="font-bold text-[15px]">{tweet.name}</p>
-						<p className="text-gray-500 mx-1">@{tweet.username}</p>
-						<p className="text-gray-500">· {
-							cond("day ago") ? "Yesterday"
-							: cond("hours ago") ? date.split(' ')[0] + "h" : cond("hour ago") ? 'an hour ago' 
-							: cond('minutes') ? date.split(' ')[0] + "m" : cond('minute') ? date.split(' ')[0].replace('a', '1') + "m"
-							: cond('seconds') ? date : moment(tweet.createdAt).format('ll').includes(new Date().getFullYear()) ? moment(tweet.createdAt).format('MMM Do YYY').split('th')[0] : moment(tweet.createdAt).format('ll')
-						}
-						</p>
+						<p className={`text-gray-500 ${id ? 'mx-[-2px] text-sm' : 'mx-1'}`}>@{tweet.username}</p>
+						{id ? null : (
+							<p className="text-gray-500">· {
+								cond("day ago") ? "Yesterday"
+								: cond("hours ago") ? date.split(' ')[0] + "h" : cond("hour ago") ? 'an hour ago' 
+								: cond('minutes') ? date.split(' ')[0] + "m" : cond('minute') ? date.split(' ')[0].replace('a', '1') + "m"
+								: cond('seconds') ? date : moment(tweet.createdAt).format('ll').includes(new Date().getFullYear()) ? moment(tweet.createdAt).format('MMM Do YYY').split('th')[0] : moment(tweet.createdAt).format('ll')
+							}
+							</p>
+						)}
 					</div>
-					<p className="leading-5 text-slate-600">{tweet.body}</p>
-					<div className="w-[90%] flex justify-between mt-3">
+					{id ? null : (
+						<>
+							<p className="leading-5 text-slate-600">{tweet.body}</p>
+							<div className="w-[90%] flex justify-between mt-3">
+								{Buttons(() => {}, 'bg-sky-500/10', 'text-sky-500', FaRegComment, false, '')}
+								{Buttons(() => {}, 'bg-green-400/10', 'text-green-400', AiOutlineRetweet, false, '', tweet.userId !== user._id)}
+								{Buttons(handleHeartButton, 'bg-pink-500/10', 'text-pink-500', currentHeartIcon.current, isLiked, currentLikeCount.current < 1 ? '' : currentLikeCount.current)}
+								{Buttons(() => {}, 'bg-yellow-400/10', 'text-yellow-400', BsBookmark, false, '')}
+							</div>
+						</>
+					)}
+				</div>
+			</div>
+			{id ? (
+				<div className="w-full">
+					<div className="mt-3 mb-4 px-4">
+						<p className="leading-5 text-black/70">{tweet.body}</p>
+						<p className="mt-3 text-slate-500 text-[15px]">{moment(tweet.createdAt).format('LT')} · {moment(tweet.createdAt).format('ll')}</p>
+					</div>
+					<div className="w-full flex justify-between mt-3 px-2 border-t border-color pt-2">
 						{Buttons(() => {}, 'bg-sky-500/10', 'text-sky-500', FaRegComment, false, '')}
 						{Buttons(() => {}, 'bg-green-400/10', 'text-green-400', AiOutlineRetweet, false, '', tweet.userId !== user._id)}
 						{Buttons(handleHeartButton, 'bg-pink-500/10', 'text-pink-500', currentHeartIcon.current, isLiked, currentLikeCount.current < 1 ? '' : currentLikeCount.current)}
 						{Buttons(() => {}, 'bg-yellow-400/10', 'text-yellow-400', BsBookmark, false, '')}
 					</div>
 				</div>
-			</div>
+			) : null}
 		</div>
 	)
 }

@@ -1,13 +1,13 @@
 import Tweet from '../models/tweet.js'
 import User from '../models/user.js'
 
-import { badReq, serverError, success } from '../utils/index.js'
+import { clientError, serverError, success } from '../utils/index.js'
 
 export const addTweet = async (req, res) => {
 	try {
 		const { userId, name, body, username } = req.body
 
-		if(!userId || !name || !body || !username) return badReq(res, 'Invalid credentials')
+		if(!userId || !name || !body || !username) return clientError(res, 'Invalid credentials')
 
 		const newTweet = new Tweet({ userId, name, username, body })
 		const result = await newTweet.save()
@@ -39,6 +39,24 @@ export const getTweetsByUsername = async (req, res) => {
 		success(res, tweets, 'Tweets Retrieved')
 	}
 	catch(error) {
+		serverError(res)
+	}
+}
+
+export const getSingleTweet = async (req, res) => {
+	try {
+		const { id } = req.params
+
+		if(!id) return clientError(res, 'Invalid id')
+
+		const tweet = await Tweet.findById({ _id: id })
+
+		if(!tweet) return clientError(res, 'Tweet not found', 404)
+
+		success(res, tweet, 'Tweet Retrieved')
+	}
+	catch(error) {
+		console.log('erorr')
 		serverError(res)
 	}
 }

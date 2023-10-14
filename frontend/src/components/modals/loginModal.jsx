@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
 
 import { useDispatch } from 'react-redux'
-import { login } from '../../../slices/auth/authSlice'
-import { loginApi } from '../../../api/api'
+import { login } from '../../slices/auth/authSlice'
+import { loginApi } from '../../api/api'
 
 import { AiFillApple, AiOutlineClose, AiOutlineGoogle } from 'react-icons/ai'
 
@@ -12,7 +12,7 @@ import { toast } from 'react-hot-toast'
 
 import 'react-lazy-load-image-component/src/effects/blur.css'
 
-const LoginForm = ({ setShowLogin }) => {
+const LoginFormModal = ({ setShowLogin }) => {
 	const dispatch = useDispatch()
 	const [formData, setFormData] = useState({ emailUsername: '', password: '' })
 
@@ -71,4 +71,4 @@ const LoginForm = ({ setShowLogin }) => {
 	)
 }
 
-export default LoginForm
+export default LoginFormModal

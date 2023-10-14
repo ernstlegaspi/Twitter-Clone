@@ -6,13 +6,25 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom'
 
 import { getCurrentUser } from './api/api'
 import { setCurrentUser } from './slices/user/userSlice'
-import LogoutModal from './components/modals/logoutModal'
 
 const Home = lazy(() => import('./components/home/home'))
-const ProfilePage = lazy(() => import('./components/profile/profilePage'))
 const Sidebar = lazy(() => import('./components/sidebar/Sidebar'))
 const Trends = lazy(() => import('./components/trends/Trends'))
-const PostForm = lazy(() => import('./components/modals/postForm'))
+
+// Modals
+const LogoutModal = lazy(() => import('./components/modals/logoutModal'))
+const PostFormModal = lazy(() => import('./components/modals/postFormModal'))
+
+// Pages
+const ProfilePage = lazy(() => import('./components/pages/profilePage'))
+const TweetPage = lazy(() => import('./components/pages/tweetPage'))
+
+/*
+	TODO
+	1. Tweet clicked another page
+	2. Can comment
+	3. Can retweet
+*/
 
 const App = () => {
 	const [showPostForm, setShowPostForm] = useState(false)
@@ -23,7 +35,6 @@ const App = () => {
 	const user = useSelector(state => state.user.user)
 	
 	const dispatch = useDispatch()
-
 
 	useEffect(() => {
 		if(!userInfoRef.current) return
@@ -54,11 +65,12 @@ const App = () => {
 				<Toaster />
 				<Suspense fallback={<p>Loading...</p>}>
 					{user ? <Sidebar showLogoutModal={setShowLogoutModal} showPostForm={setShowPostForm} user={user} /> : null}
-					{showPostForm ? <PostForm showPostForm={setShowPostForm} /> : null}
+					{showPostForm ? <PostFormModal showPostForm={setShowPostForm} /> : null}
 					{showLogoutModal ? <LogoutModal showLogoutModal={setShowLogoutModal} /> : null}
 					<Routes>
 						<Route path='/' element={<Home />} />
 						<Route path='/:username' element={<ProfilePage user={user} />} />
+						<Route path='/:username/status/:id' element={<TweetPage />} />
 					</Routes>
 					{user ? <Trends /> : null}
 				</Suspense>
