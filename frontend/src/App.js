@@ -21,7 +21,6 @@ const TweetPage = lazy(() => import('./components/pages/tweetPage'))
 
 /*
 	TODO
-	1. Tweet clicked another page
 	2. Can comment
 	3. Can retweet
 */
@@ -38,7 +37,7 @@ const App = () => {
 
 	useEffect(() => {
 		if(!userInfoRef.current) return
-		
+	
 		const currentUser = async () => {
 			try {
 				const { data } = await getCurrentUser(userInfo?.id)
@@ -50,6 +49,7 @@ const App = () => {
 			catch({ response }) {
 				if(response.data.message !== 'Internal Server Error') return
 
+				dispatch(setCurrentUser(null))
 				toast.error('Invalid Token')
 				localStorage.removeItem('userInfo')
 				localStorage.removeItem('persist:root')
@@ -68,9 +68,9 @@ const App = () => {
 					{showPostForm ? <PostFormModal showPostForm={setShowPostForm} /> : null}
 					{showLogoutModal ? <LogoutModal showLogoutModal={setShowLogoutModal} /> : null}
 					<Routes>
-						<Route path='/' element={<Home />} />
+						<Route path='/' element={<Home user={user} />} />
 						<Route path='/:username' element={<ProfilePage user={user} />} />
-						<Route path='/:username/status/:id' element={<TweetPage />} />
+						<Route path='/:username/status/:id' element={<TweetPage user={user} />} />
 					</Routes>
 					{user ? <Trends /> : null}
 				</Suspense>

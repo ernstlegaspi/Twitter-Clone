@@ -25,8 +25,8 @@ export const conflict = (res, message) => res.status(409).json({
 })
 
 // 5** http res status codes
-export const serverError = res => res.status(500).json({
+export const serverError = (res, message = 'Internal Server Error') => res.status(500).json({
 	success: false,
 	result: null,
-	message: 'Internal Server Error'
+	message
 })

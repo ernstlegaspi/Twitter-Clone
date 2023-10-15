@@ -8,6 +8,9 @@ API.interceptors.request.use(req => {
 	return req
 })
 
+export const addComment = data => API.post('comment/', data)
+export const getCommentsByTweetId = id => API.get(`comment/${id}`)
+
 export const addTweet = data => API.post('tweet/', data)
 export const likeTweet = data => API.put('tweet/', data)
 export const unlikeTweet = data => API.put('tweet/unlike', data)

@@ -14,7 +14,7 @@ const LandingPage = () => {
 	const [showRegister, setShowRegister] = useState(false)
 
 	// eslint-disable-next-line
-	const [isLoading, startTransition] = useTransition()
+	const [_, startTransition] = useTransition()
 	
 	return (
 		<div className="h-screen">

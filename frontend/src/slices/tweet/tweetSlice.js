@@ -3,11 +3,15 @@ import { createSlice } from '@reduxjs/toolkit'
 const tweet = createSlice({
 	name: 'Tweet',
 	initialState: {
+		comments: undefined,
 		tweets: undefined,
 		tweet: undefined,
 		postForm: false
 	},
 	reducers: {
+		setComment: (state, action) => {
+			state.comments = action.payload
+		},
 		setTweet: (state, action) => {
 			state.tweet = action.payload
 		},
@@ -17,6 +21,6 @@ const tweet = createSlice({
 	}
 })
 
-export const { setTweet, setTweets } = tweet.actions
+export const { setComment, setTweet, setTweets } = tweet.actions
 
 export default tweet.reducer

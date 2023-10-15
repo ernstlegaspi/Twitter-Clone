@@ -15,11 +15,13 @@ const SidebarItem = ({ onClick, Icon, label, username }) => {
 
 	const path = window.location.pathname
 
-	if(label === 'Home' && path === '/') {
-		currentIcon.current = BsFillHouseDoorFill
-	}
-	else if(label === 'Profile' && path.split('/')[1] === username) {
-		currentIcon.current = BsFillPersonFill
+	if(!path.includes('status/')) {
+		if(label === 'Home' && path === '/') {
+			currentIcon.current = BsFillHouseDoorFill
+		}
+		else if(label === 'Profile' && path.split('/')[1] === username) {
+			currentIcon.current = BsFillPersonFill
+		}
 	}
 
 	return (

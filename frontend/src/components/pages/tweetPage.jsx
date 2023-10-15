@@ -9,14 +9,14 @@ import TweetCard from '../cards/tweetCard'
 import { getSingleTweet } from '../../api/api'
 import { setTweet } from '../../slices/tweet/tweetSlice'
 
-const TweetPage = () => {
+const TweetPage = ({ user }) => {
 	const dispatch = useDispatch()
 	const tweet = useSelector(state => state.tweet.tweet)
 	const tweetExisting = useRef(true)
 	const isLoading = useRef(false)
 	const navigate = useNavigate()
 	const { id } = useParams()
-	
+
 	useEffect(() => {
 		isLoading.current = true
 
@@ -47,7 +47,7 @@ const TweetPage = () => {
 						</div>
 						<p className="font-bold text-xl">Post</p>
 					</div>
-					{isLoading.current || !tweet ? <div className="w-full h-[90%] flex items-center justify-center"><PulseLoader size={10} color="#0EA5E9" /></div> : <TweetCard tweet={tweet} />}
+					{isLoading.current || !tweet || !user ? <div className="w-full h-[90%] flex items-center justify-center"><PulseLoader size={10} color="#0EA5E9" /></div> : <TweetCard tweet={tweet} user={user} />}
 				</>
 			)}
 		</div>

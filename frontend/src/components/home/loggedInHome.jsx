@@ -7,7 +7,7 @@ import { setTweets } from '../../slices/tweet/tweetSlice'
 
 const HomeContent = lazy(() => import('./components/homeContent'))
 
-const LoggedInHome = () => {
+const LoggedInHome = ({ user }) => {
 	const dispatch = useDispatch()
 	const tweets = useSelector(state => state.tweet.tweets)
 
@@ -24,7 +24,7 @@ const LoggedInHome = () => {
 	return (
 		<>
 			<Suspense fallback={<p>Loading...</p>}>
-				<HomeContent tweets={tweets} />
+				<HomeContent tweets={tweets} user={user} />
 			</Suspense>
 		</>
 	)

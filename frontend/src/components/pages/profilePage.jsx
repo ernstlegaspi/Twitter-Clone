@@ -21,7 +21,7 @@ const ProfilePage = ({ user }) => {
 	const params = useParams()
 	const dispatch = useDispatch()
 	const tweets = useSelector(state => state.tweet.tweets)
-   const navigate = useNavigate()
+	const navigate = useNavigate()
 	
 	let noTweets = !tweets || Object.keys(tweets).length === 0 || tweets.length === 0
 
@@ -127,8 +127,8 @@ const ProfilePage = ({ user }) => {
 				</div>
 			</div>
 			<div className="mt-[162px] relative z-20">
-				{noTweets ? null : loading ? <div className="w-full pt-10 flex items-center justify-center"><PulseLoader color="#0EA5E9" /></div> : (
-					tweets.map(tweet => <TweetCard key={tweet._id} tweet={tweet} />)
+				{noTweets ? null : loading || !user ? <div className="w-full pt-10 flex items-center justify-center"><PulseLoader color="#0EA5E9" /></div> : (
+					tweets.map(tweet => <TweetCard user={user} key={tweet._id} tweet={tweet} />)
 				)}
 			</div>
 		</div>
