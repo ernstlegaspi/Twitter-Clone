@@ -9,6 +9,7 @@ import { FaRegComment } from 'react-icons/fa'
 import { useParams } from 'react-router-dom'
 
 import { likeTweet, unlikeTweet } from '../../api/api'
+import { PulseLoader } from 'react-spinners'
 
 const CommentModal = lazy(() => import('../modals/commentModal'))
 
@@ -18,6 +19,8 @@ const TweetCard = ({ tweet, user, isComment = false }) => {
 	const [buttonsHovered, setButtonsHovered] = useState(false)
 	const [showCommentModal, setShowCommentModal] = useState(false)
 	const currentHeartIcon = useRef(AiOutlineHeart)
+	// const currentCommentCount = useRef(0)
+	const [currentCommentCount, setCurrentCommentCount] = useState(tweet.commentsCount)
 	const currentLikeCount = useRef(0)
 	const { id } = useParams()
 
@@ -75,6 +78,8 @@ const TweetCard = ({ tweet, user, isComment = false }) => {
 		
 		const userId = tweet.likedUserId.filter(usersId => usersId === user._id)
 		
+		setCurrentCommentCount(tweet.commentsCount)
+
 		if(userId[0]) {
 			currentHeartIcon.current = AiFillHeart
 			currentLikeCount.current = tweet.likedUserId.length
@@ -84,18 +89,18 @@ const TweetCard = ({ tweet, user, isComment = false }) => {
 		}
 
 		currentLikeCount.current = tweet.likedUserId.length
-	}, [user, tweet?.likedUserId, tweet?._id, user?._id])
+	}, [user, tweet?.likedUserId, tweet.commentsCount, tweet?._id, user?._id])
 
 	return (
 		<>
-			<div onClick={() => id || buttonsHovered ? null : window.location.href = `${tweet.username}/status/${tweet._id}`} className={`border-b border-color ${id ? '' : 'hover:bg-gray-100/50'} ${id ? '' : 'cursor-pointer'} w-full transition-all py-2`}>
+			<div onClick={() => id || buttonsHovered ? null : window.location.href = `${tweet.username}/status/${tweet._id}`} className={`border-b border-color ${id && !isComment ? '' : 'hover:bg-gray-100/50'} ${id && !isComment ? '' : 'cursor-pointer'} w-full transition-all py-2`}>
 				<div className="flex w-[95%] mx-auto">
 					<p className="bg-indigo-600 rounded-full text-white py-[6px] px-[15px] w-max h-max text-xl mr-3">{tweet.name.charAt(0)}</p>
 					<div className="w-full">
-						<div className={`flex ${id ? 'flex-col' : ''}`}>
+						<div className={`flex ${id && !isComment ? 'flex-col' : ''}`}>
 							<p className="font-bold text-[15px]">{tweet.name}</p>
-							<p className={`text-gray-500 ${id ? 'mx-[-2px] text-sm' : 'mx-1'}`}>@{tweet.username}</p>
-							{id ? null : (
+							<p className={`text-gray-500 ${id && !isComment ? 'mx-[-2px] text-sm' : 'mx-1'}`}>@{tweet.username}</p>
+							{id && !isComment ? null : (
 								<p className="text-gray-500">· {
 									cond("day ago") ? "Yesterday"
 									: cond("hours ago") ? date.split(' ')[0] + "h" : cond("hour ago") ? 'an hour ago' 
@@ -105,11 +110,11 @@ const TweetCard = ({ tweet, user, isComment = false }) => {
 								</p>
 							)}
 						</div>
-						{id ? null : (
+						{id && !isComment ? null : (
 							<>
 								<p className="leading-5 text-slate-600">{tweet.body}</p>
 								<div className="w-[90%] flex justify-between mt-3">
-									{Buttons(() => startTransition(() => setShowCommentModal(true)), 'bg-sky-500/10', 'text-sky-500', FaRegComment, false, '')}
+									{Buttons(() => startTransition(() => setShowCommentModal(true)), 'bg-sky-500/10', 'text-sky-500', FaRegComment, false, currentCommentCount < 1 ? '' : currentCommentCount)}
 									{Buttons(() => {}, 'bg-green-400/10', 'text-green-400', AiOutlineRetweet, false, '', tweet.userId !== user._id)}
 									{Buttons(handleHeartButton, 'bg-pink-500/10', 'text-pink-500', currentHeartIcon.current, isLiked, currentLikeCount.current < 1 ? '' : currentLikeCount.current)}
 									{Buttons(() => {}, 'bg-yellow-400/10', 'text-yellow-400', BsBookmark, false, '')}
@@ -118,14 +123,14 @@ const TweetCard = ({ tweet, user, isComment = false }) => {
 						)}
 					</div>
 				</div>
-				{id ? (
+				{id && !isComment ? (
 					<div className="w-full">
 						<div className="mt-3 mb-4 px-4">
 							<p className="leading-5 text-black/70">{tweet.body}</p>
 							<p className="mt-3 text-slate-500 text-[15px]">{moment(tweet.createdAt).format('LT')} · {moment(tweet.createdAt).format('ll')}</p>
 						</div>
 						<div className="w-full flex justify-between mt-3 px-2 border-t border-color pt-2">
-							{Buttons(() => startTransition(() => setShowCommentModal(true)), 'bg-sky-500/10', 'text-sky-500', FaRegComment, false, '')}
+							{Buttons(() => startTransition(() => setShowCommentModal(true)), 'bg-sky-500/10', 'text-sky-500', FaRegComment, false, currentCommentCount < 1 ? '' : currentCommentCount)}
 							{Buttons(() => {}, 'bg-green-400/10', 'text-green-400', AiOutlineRetweet, false, '', tweet.userId !== user._id)}
 							{Buttons(handleHeartButton, 'bg-pink-500/10', 'text-pink-500', currentHeartIcon.current, isLiked, currentLikeCount.current < 1 ? '' : currentLikeCount.current)}
 							{Buttons(() => {}, 'bg-yellow-400/10', 'text-yellow-400', BsBookmark, false, '')}
@@ -133,8 +138,12 @@ const TweetCard = ({ tweet, user, isComment = false }) => {
 					</div>
 				) : null}
 			</div>
-			{showCommentModal ? <Suspense fallback={<p>Loading...</p>}>
-				<CommentModal user={user} tweet={tweet} showCommentModal={setShowCommentModal} />
+			{showCommentModal ? <Suspense fallback={
+				<div className="w-full h-full flex items-center justify-center">
+					<PulseLoader size={12} color="#0EA5E9" />
+				</div>
+			}>
+				<CommentModal currentCommentCount={setCurrentCommentCount} user={user} tweet={tweet} showCommentModal={setShowCommentModal} />
 			</Suspense> : null}
 		</>
 	)

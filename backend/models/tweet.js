@@ -37,6 +37,10 @@ const tweetSchema = new mongoose.Schema({
 		type: Number,
 		default: 0
 	},
+	tweetId: {
+		type: String,
+		default: ''
+	},
 	likedUserId: [String],
 	commentsId: [String],
 }, { timestamps: true })

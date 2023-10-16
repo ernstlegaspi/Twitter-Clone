@@ -1,5 +1,6 @@
 import axios from 'axios'
 
+// const API = axios.create({ baseURL: 'http://192.168.1.4:3001/' })
 const API = axios.create({ baseURL: 'http://localhost:3001/' })
 
 API.interceptors.request.use(req => {
@@ -8,12 +9,11 @@ API.interceptors.request.use(req => {
 	return req
 })
 
-export const addComment = data => API.post('comment/', data)
-export const getCommentsByTweetId = id => API.get(`comment/${id}`)
-
+export const addComment = data => API.post('tweet/comment', data)
 export const addTweet = data => API.post('tweet/', data)
 export const likeTweet = data => API.put('tweet/', data)
 export const unlikeTweet = data => API.put('tweet/unlike', data)
+// export const updateTweetCommentCount = id => API.put('tweet/commentCount', id)
 export const getAllTweets = () => API.get('tweet/')
 export const getSingleTweet = id => API.get(`tweet/singleTweet/${id}`)
 export const getTweetsByUsername = username => API.get(`tweet/${username}`)

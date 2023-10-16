@@ -5,11 +5,12 @@ import { AiOutlineClose } from 'react-icons/ai'
 import { useDispatch } from 'react-redux'
 
 import { postFormBottomIcon } from '../../constants'
-import { addComment, getCommentsByTweetId } from '../../api/api'
+import { addComment } from '../../api/api'
+// import { addComment, getCommentsByTweetId, updateTweetCommentCount } from '../../api/api'
 import { setComment } from '../../slices/tweet/tweetSlice'
 import { toast } from 'react-hot-toast'
 
-const CommentModal = ({ user, tweet, showCommentModal }) => {
+const CommentModal = ({ currentCommentCount, user, tweet, showCommentModal }) => {
 	const [body, setBody] = useState('')
 	const [disabled, setDisabled] = useState(true)
 	// eslint-disable-next-line
@@ -23,17 +24,25 @@ const CommentModal = ({ user, tweet, showCommentModal }) => {
 	const handleSubmit = async e => {
 		e.preventDefault()
 		setDisabled(true)
-		
+
 		addComment({ tweetId: tweet._id, userId: user._id, name: user.name, username: user.username, body })
-		.then(() => {
+		.then(({ data }) => {
 			setDisabled(false)
 			setBody('')
 			toast.success('Your comment was sent.')
+			console.log(data)
 		})
 
-		const { data } = await getCommentsByTweetId(tweet._id)
+		// console.log(tweet._id)
+		// const res = await updateTweetCommentCount({ id: tweet._id })
 
-		dispatch(setComment(data.result))
+		// console.log(res)
+
+		// currentCommentCount(res.data.result.commentsCount)
+
+		// const { data } = await getCommentsByTweetId(tweet._id)
+
+		// dispatch(setComment(data.result))
 	}
 
 	const handleBodyChange = e => {
