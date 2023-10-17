@@ -17,8 +17,6 @@ const LoggedInHome = ({ user }) => {
 			try {
 				const { data } = await getAllTweets()
 
-				console.log(tweets)
-
 				dispatch(setTweets(data.result))
 			}
 			catch(error) {

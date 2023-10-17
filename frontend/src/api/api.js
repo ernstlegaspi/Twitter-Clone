@@ -10,6 +10,10 @@ API.interceptors.request.use(req => {
 })
 
 export const addComment = data => API.post('tweet/comment', data)
+export const addNestedComment = data => API.post('tweet/nestedComments', data)
+export const getNestedComments = tweetId => API.get(`tweet/nestedComments/${tweetId}`)
+export const getCommentsByTweetId = tweetId => API.get(`tweet/comments/${tweetId}`)
+
 export const addTweet = data => API.post('tweet/', data)
 export const likeTweet = data => API.put('tweet/', data)
 export const unlikeTweet = data => API.put('tweet/unlike', data)

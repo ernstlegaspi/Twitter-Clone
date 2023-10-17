@@ -41,6 +41,10 @@ const tweetSchema = new mongoose.Schema({
 		type: String,
 		default: ''
 	},
+	nestedComments: [{
+		type: mongoose.Schema.ObjectId,
+		ref: 'Tweet'
+	}],
 	likedUserId: [String],
 	commentsId: [String],
 }, { timestamps: true })

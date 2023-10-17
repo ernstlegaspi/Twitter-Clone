@@ -5,9 +5,8 @@ import { AiOutlineClose } from 'react-icons/ai'
 import { useDispatch } from 'react-redux'
 
 import { postFormBottomIcon } from '../../constants'
-import { addComment } from '../../api/api'
-// import { addComment, getCommentsByTweetId, updateTweetCommentCount } from '../../api/api'
-import { setComment } from '../../slices/tweet/tweetSlice'
+import { addComment, addNestedComment, getAllTweets, getCommentsByTweetId, getNestedComments } from '../../api/api'
+import { setComment, setNestedComments, setTweets } from '../../slices/tweet/tweetSlice'
 import { toast } from 'react-hot-toast'
 
 const CommentModal = ({ currentCommentCount, user, tweet, showCommentModal }) => {
@@ -25,24 +24,38 @@ const CommentModal = ({ currentCommentCount, user, tweet, showCommentModal }) =>
 		e.preventDefault()
 		setDisabled(true)
 
-		addComment({ tweetId: tweet._id, userId: user._id, name: user.name, username: user.username, body })
-		.then(({ data }) => {
-			setDisabled(false)
-			setBody('')
-			toast.success('Your comment was sent.')
-			console.log(data)
-		})
+		const { data } = await addComment({ tweetId: tweet._id, userId: user._id, name: user.name, username: user.username, body })
+		
+		setDisabled(false)
+		setBody('')
+		toast.success('Your comment was sent.')
+		currentCommentCount(data.result.newCommentCount.commentsCount)
+		
+		if(tweet.tweetId) {
+			await addNestedComment({ id: tweet._id, nestedCommentId: data.result.newTweetComment._id })
 
-		// console.log(tweet._id)
-		// const res = await updateTweetCommentCount({ id: tweet._id })
+			const res = await getNestedComments(tweet._id)
+			
+			console.log('After res')
+			console.log(res.data.result)
+			
+			dispatch(setNestedComments(res.data.result))
 
-		// console.log(res)
+			return
+		}
 
-		// currentCommentCount(res.data.result.commentsCount)
+		if(window.location.pathname === '/') {
+			const res = await getAllTweets()
 
-		// const { data } = await getCommentsByTweetId(tweet._id)
+			dispatch(setTweets(res.data.result))
+			
+			return
+		}
+		
+		const res = await getCommentsByTweetId(tweet._id)
+		dispatch(setComment(res.data.result))
 
-		// dispatch(setComment(data.result))
+		// console.log('dito')
 	}
 
 	const handleBodyChange = e => {

@@ -6,15 +6,14 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { PulseLoader } from 'react-spinners'
 
 import TweetCard from '../cards/tweetCard'
-// import { getCommentsByTweetId, getSingleTweet } from '../../api/api'
-import { getSingleTweet } from '../../api/api'
-import { setTweet } from '../../slices/tweet/tweetSlice'
-// import { setComment, setTweet } from '../../slices/tweet/tweetSlice'
+import { getCommentsByTweetId, getSingleTweet } from '../../api/api'
+import { setComment, setTweet } from '../../slices/tweet/tweetSlice'
 
 const TweetPage = ({ user }) => {
 	const dispatch = useDispatch()
 	const tweet = useSelector(state => state.tweet.tweet)
 	const comments = useSelector(state => state.tweet.comments)
+	const nestedComment = useSelector(state => state.tweet.nestedComments)
 	const tweetExisting = useRef(true)
 	const isLoading = useRef(false)
 	const commentsLoading = useRef(false)
@@ -22,6 +21,7 @@ const TweetPage = ({ user }) => {
 	const { id } = useParams()
 
 	useEffect(() => {
+		commentsLoading.current = true
 		isLoading.current = true
 
 		const singleTweet = async () => {
@@ -38,25 +38,25 @@ const TweetPage = ({ user }) => {
 
 		singleTweet()
 
-		const commentsByTweetId = async () => {
-			// commentsLoading.current = true
+		const allComments = async () => {
+			try {
+				const { data } = await getCommentsByTweetId(tweet._id)
 
-			// try {
-			// 	const { data } = await getCommentsByTweetId(tweet._id)
-
-			// 	dispatch(setComment(data.result))
-			// 	commentsLoading.current = false
-			// }
-			// catch(error) {
-			// 	commentsLoading.current = true
-			// }
+				dispatch(setComment(data.result))
+				commentsLoading.current = false
+			}
+			catch(error) {
+				commentsLoading.current = true
+			}
 		}
 
-		commentsByTweetId()
+		allComments()
+
+		
 	}, [dispatch, tweet?._id, id])
 
 	return (
-		<div className="h-full w-[600px] border border-y-0 border-color">
+		<div className="h-full feed-scroll w-[600px] border border-y-0 border-color">
 			{!tweetExisting.current ? <div className="h-full w-full flex items-center justify-center">
 				<p className="text-gray-400 text-xl font-semibold">No tweet retrieved</p>
 			</div> : (
@@ -70,7 +70,12 @@ const TweetPage = ({ user }) => {
 					{isLoading.current || !tweet || !user ? <div className="w-full h-[90%] flex items-center justify-center"><PulseLoader size={10} color="#0EA5E9" /></div> : <TweetCard tweet={tweet} user={user} />}
 					{!comments || commentsLoading.current ? <div className="w-full h-[90%] flex items-center justify-center"><PulseLoader size={10} color="#0EA5E9" /></div> : (
 						<>
-							{comments.map(comment => <TweetCard key={comment._id} isComment={true} tweet={comment} user={user} />)}
+							{comments.map(comment => (
+								<div key={comment._id}>
+									<TweetCard isComment={true} tweet={comment} user={user} />
+									{!nestedComment || comment.nestedComments.length < 1 ? null : <TweetCard key={nestedComment._id} isComment={true} tweet={nestedComment} user={user} />}
+								</div>
+							))}
 						</>
 					)}
 				</>

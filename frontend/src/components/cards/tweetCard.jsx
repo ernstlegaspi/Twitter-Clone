@@ -6,7 +6,7 @@ import { AiFillHeart, AiOutlineHeart, AiOutlineRetweet } from 'react-icons/ai'
 import { BsBookmark } from 'react-icons/bs'
 import { FaRegComment } from 'react-icons/fa'
 
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 
 import { likeTweet, unlikeTweet } from '../../api/api'
 import { PulseLoader } from 'react-spinners'
@@ -16,13 +16,13 @@ const CommentModal = lazy(() => import('../modals/commentModal'))
 const TweetCard = ({ tweet, user, isComment = false }) => {
 	// eslint-disable-next-line
 	const [_, startTransition] = useTransition()
-	const [buttonsHovered, setButtonsHovered] = useState(false)
+	const buttonsHovered = useRef(false)
 	const [showCommentModal, setShowCommentModal] = useState(false)
 	const currentHeartIcon = useRef(AiOutlineHeart)
-	// const currentCommentCount = useRef(0)
 	const [currentCommentCount, setCurrentCommentCount] = useState(tweet.commentsCount)
 	const currentLikeCount = useRef(0)
 	const { id } = useParams()
+	const navigate = useNavigate()
 
 	const [isLiked, setIsLiked] = useState(false)
 
@@ -36,10 +36,10 @@ const TweetCard = ({ tweet, user, isComment = false }) => {
 		return (
 			<div onClick={!canBeHovered ? null : onClick} onMouseEnter={() => {
 				setHovered(true)
-				setButtonsHovered(true)
+				buttonsHovered.current = true
 			}} onMouseLeave={() => {
 				setHovered(false)
-				setButtonsHovered(false)
+				buttonsHovered.current = false
 			}} className={`${!canBeHovered ? 'text-gray-300' : hovered || isActive ? `${color}` : 'text-gray-500'} flex items-center cursor-pointer`}>
 				<div className={`${!canBeHovered ? '' : hovered ? `${bgColor}` : ''} w-max rounded-full p-2 transition-all`}>
 					<Icon size={20} />
@@ -93,9 +93,12 @@ const TweetCard = ({ tweet, user, isComment = false }) => {
 
 	return (
 		<>
-			<div onClick={() => id || buttonsHovered ? null : window.location.href = `${tweet.username}/status/${tweet._id}`} className={`border-b border-color ${id && !isComment ? '' : 'hover:bg-gray-100/50'} ${id && !isComment ? '' : 'cursor-pointer'} w-full transition-all py-2`}>
-				<div className="flex w-[95%] mx-auto">
-					<p className="bg-indigo-600 rounded-full text-white py-[6px] px-[15px] w-max h-max text-xl mr-3">{tweet.name.charAt(0)}</p>
+			<div onClick={() => (id && !isComment) || (isComment && buttonsHovered.current) || (window.location.pathname === '/' && buttonsHovered.current) ? null : navigate(`/${tweet.username}/status/${tweet._id}`)} className={`${tweet.nestedComments < 1 ? 'border-b' : ''} border-color ${id && !isComment ? '' : 'hover:bg-gray-100/50'} ${id && !isComment ? '' : 'cursor-pointer'} w-full transition-all pt-2`}>
+				<div className="flex w-full">
+					<div className="relative">
+						<p className="border-8 border-white z-10 relative bg-indigo-600 rounded-full text-white py-[6px] px-[15px] w-max h-max text-xl mr-1">{tweet.name.charAt(0)}</p>
+						{tweet.nestedComments.length < 1 ? null : <div className="absolute bg-gray-300 w-[2px] top-0 ml-[26px] h-full"></div>}
+					</div>
 					<div className="w-full">
 						<div className={`flex ${id && !isComment ? 'flex-col' : ''}`}>
 							<p className="font-bold text-[15px]">{tweet.name}</p>
@@ -113,7 +116,7 @@ const TweetCard = ({ tweet, user, isComment = false }) => {
 						{id && !isComment ? null : (
 							<>
 								<p className="leading-5 text-slate-600">{tweet.body}</p>
-								<div className="w-[90%] flex justify-between mt-3">
+								<div className="w-[90%] flex justify-between mt-3 mb-2">
 									{Buttons(() => startTransition(() => setShowCommentModal(true)), 'bg-sky-500/10', 'text-sky-500', FaRegComment, false, currentCommentCount < 1 ? '' : currentCommentCount)}
 									{Buttons(() => {}, 'bg-green-400/10', 'text-green-400', AiOutlineRetweet, false, '', tweet.userId !== user._id)}
 									{Buttons(handleHeartButton, 'bg-pink-500/10', 'text-pink-500', currentHeartIcon.current, isLiked, currentLikeCount.current < 1 ? '' : currentLikeCount.current)}
@@ -129,7 +132,7 @@ const TweetCard = ({ tweet, user, isComment = false }) => {
 							<p className="leading-5 text-black/70">{tweet.body}</p>
 							<p className="mt-3 text-slate-500 text-[15px]">{moment(tweet.createdAt).format('LT')} · {moment(tweet.createdAt).format('ll')}</p>
 						</div>
-						<div className="w-full flex justify-between mt-3 px-2 border-t border-color pt-2">
+						<div className="w-full flex justify-between mt-3 mb-2 px-2 border-t border-color pt-2">
 							{Buttons(() => startTransition(() => setShowCommentModal(true)), 'bg-sky-500/10', 'text-sky-500', FaRegComment, false, currentCommentCount < 1 ? '' : currentCommentCount)}
 							{Buttons(() => {}, 'bg-green-400/10', 'text-green-400', AiOutlineRetweet, false, '', tweet.userId !== user._id)}
 							{Buttons(handleHeartButton, 'bg-pink-500/10', 'text-pink-500', currentHeartIcon.current, isLiked, currentLikeCount.current < 1 ? '' : currentLikeCount.current)}

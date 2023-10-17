@@ -83,7 +83,7 @@ const ProfilePage = ({ user }) => {
 	</div>
 
 	return (
-		<div className="h-full w-[600px] border border-y-0 border-color">
+		<div className="h-full feed-scroll w-[600px] border border-y-0 border-color">
 			<div className="flex items-center py-1 px-2">
 				<div onClick={() => navigate('/')} className="cursor-pointer transition-all hover:bg-gray-200 rounded-full w-max h-max p-2 mr-3">
 					<FiArrowLeft size={20} />
