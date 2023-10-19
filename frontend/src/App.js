@@ -21,8 +21,11 @@ const TweetPage = lazy(() => import('./components/pages/tweetPage'))
 
 /*
 	TODO
-	2. Can comment
-	3. Can retweet
+	1. Retweet
+	2. Pin Tweet
+	3. Delete Tweet
+	4. Notifications
+	5. Bookmarks
 */
 
 const App = () => {

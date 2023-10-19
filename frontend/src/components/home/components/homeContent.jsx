@@ -5,8 +5,6 @@ import { SyncLoader } from 'react-spinners'
 import TweetCard from '../../cards/tweetCard'
 
 const HomeContent = ({ tweets, user }) => {
-	
-	
 	return (
 		<div className="h-full w-[600px] border border-y-0 border-color">
 			<div className="w-full flex border-b border-color">
@@ -17,13 +15,13 @@ const HomeContent = ({ tweets, user }) => {
 					<p>Following</p>
 				</div>
 			</div>
-			<div className="h-[860px] w-full feed-scroll">
+			<div className="h-[800px] w-full feed-scroll">
 				{!tweets || Object.keys(tweets).length === 0 || tweets.length === 0 ? <div className="w-full h-full flex items-center justify-center">
 					<SyncLoader size={12} color="#0EA5E9" />
 				</div> : tweets.map(tweet => (
-					<>
-						{tweet.userId !== user._id && tweet.tweetId.length > 0 ? null : <TweetCard key={tweet._id} tweet={tweet} user={user} />}
-					</>
+					<div key={tweet._id}>
+						{tweet.userId !== user._id && tweet.tweetId.length > 0 ? null : <TweetCard tweet={tweet} user={user} />}
+					</div>
 				))}
 			</div>
 		</div>

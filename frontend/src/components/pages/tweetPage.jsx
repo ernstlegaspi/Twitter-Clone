@@ -6,19 +6,21 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { PulseLoader } from 'react-spinners'
 
 import TweetCard from '../cards/tweetCard'
-import { getCommentsByTweetId, getSingleTweet } from '../../api/api'
-import { setComment, setTweet } from '../../slices/tweet/tweetSlice'
+import { getCommentsByTweetId, getNestedComments, getSingleTweet } from '../../api/api'
+import { setComment, setNestedComments, setTweet } from '../../slices/tweet/tweetSlice'
 
 const TweetPage = ({ user }) => {
 	const dispatch = useDispatch()
 	const tweet = useSelector(state => state.tweet.tweet)
 	const comments = useSelector(state => state.tweet.comments)
-	const nestedComment = useSelector(state => state.tweet.nestedComments)
+	const nestedComments = useSelector(state => state.tweet.nestedComments)
+
 	const tweetExisting = useRef(true)
 	const isLoading = useRef(false)
 	const commentsLoading = useRef(false)
 	const navigate = useNavigate()
 	const { id } = useParams()
+
 
 	useEffect(() => {
 		commentsLoading.current = true
@@ -43,6 +45,7 @@ const TweetPage = ({ user }) => {
 				const { data } = await getCommentsByTweetId(tweet._id)
 
 				dispatch(setComment(data.result))
+
 				commentsLoading.current = false
 			}
 			catch(error) {
@@ -52,11 +55,17 @@ const TweetPage = ({ user }) => {
 
 		allComments()
 
-		
+		const allNestedComments = async () => {
+			const { data } = await getNestedComments()
+
+			dispatch(setNestedComments(data.result))
+		}
+
+		allNestedComments()
 	}, [dispatch, tweet?._id, id])
 
 	return (
-		<div className="h-full feed-scroll w-[600px] border border-y-0 border-color">
+		<div className="h-full feed-scroll overflow-x-hidden w-[600px] border border-y-0 border-color">
 			{!tweetExisting.current ? <div className="h-full w-full flex items-center justify-center">
 				<p className="text-gray-400 text-xl font-semibold">No tweet retrieved</p>
 			</div> : (
@@ -73,7 +82,7 @@ const TweetPage = ({ user }) => {
 							{comments.map(comment => (
 								<div key={comment._id}>
 									<TweetCard isComment={true} tweet={comment} user={user} />
-									{!nestedComment || comment.nestedComments.length < 1 ? null : <TweetCard key={nestedComment._id} isComment={true} tweet={nestedComment} user={user} />}
+									{!nestedComments || comment.nestedComments.length < 1 ? null : nestedComments.map(nestedComment => nestedComment.nestedComments[nestedComment.nestedComments.length - 1].tweetId === comment._id ? <TweetCard isComment={true} tweet={nestedComment.nestedComments[nestedComment.nestedComments.length - 1]} user={user} /> : null)}
 								</div>
 							))}
 						</>

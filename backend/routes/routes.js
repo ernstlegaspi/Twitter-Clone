@@ -2,7 +2,7 @@ import express from 'express'
 
 import { login, register } from '../controllers/auth.js'
 import { generateOtp, getCurrentUser, getUserLikedTweets, likeTweet, unlikeTweet, updateUserTweetCount } from '../controllers/user.js'
-import { addTweet, getTweets, getSingleTweet, getTweetsByUsername, addComment, getCommentsByTweetId, getLastNestedComment, addNestedComment } from '../controllers/tweet.js'
+import { addTweet, getTweets, getSingleTweet, getTweetsByUsername, addComment, getCommentsByTweetId, addNestedComment, getNestedComments } from '../controllers/tweet.js'
 
 import { verifyToken } from '../middleware/auth.js'
 
@@ -20,7 +20,7 @@ router.get('/tweet/', verifyToken, getTweets)
 router.get('/tweet/:username', getTweetsByUsername)
 router.get('/tweet/singleTweet/:id', getSingleTweet)
 router.get('/tweet/comments/:tweetId', getCommentsByTweetId)
-router.get('/tweet/nestedComments/:id', getLastNestedComment)
+router.get('/tweet/nested/comments', getNestedComments)
 
 router.post('/tweet/', verifyToken, addTweet)
 router.post('/tweet/comment', verifyToken, addComment)

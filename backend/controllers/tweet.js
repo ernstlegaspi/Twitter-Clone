@@ -49,15 +49,13 @@ export const getTweets = async (req, res) => {
 	await getDocuments(res, Tweet, {})
 }
 
-export const getLastNestedComment = async (req, res) => {
+export const getNestedComments = async (req, res) => {
 	try {
-		const { id } = req.params
-
-		const nestedComments = await Tweet.findOne({ _id: id }).sort({ createdAt: -1 })
+		const nestedComments = await Tweet.find({ nestedComments: { $exists: true, $ne: [] } })
 		.populate('nestedComments')
 		.exec()
 
-		success(res, nestedComments.nestedComments[nestedComments.nestedComments.length - 1], 'Nested comments fetched')
+		success(res, nestedComments, 'Nested comments fetched')
 	}
 	catch(error) {
 		serverError(res)

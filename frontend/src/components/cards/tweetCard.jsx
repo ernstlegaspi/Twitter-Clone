@@ -93,11 +93,11 @@ const TweetCard = ({ tweet, user, isComment = false }) => {
 
 	return (
 		<>
-			<div onClick={() => (id && !isComment) || (isComment && buttonsHovered.current) || (window.location.pathname === '/' && buttonsHovered.current) ? null : navigate(`/${tweet.username}/status/${tweet._id}`)} className={`${tweet.nestedComments < 1 ? 'border-b' : ''} border-color ${id && !isComment ? '' : 'hover:bg-gray-100/50'} ${id && !isComment ? '' : 'cursor-pointer'} w-full transition-all pt-2`}>
+			<div onClick={() => (id && !isComment) || (isComment && buttonsHovered.current) || (window.location.pathname === '/' && buttonsHovered.current) ? null : navigate(`/${tweet.username}/status/${tweet._id}`)} className={`${tweet.nestedComments < 1 || (tweet.nestedComments.length > 0  && window.location.pathname === '/') ? 'border-b' : ''} border-color ${id && !isComment ? '' : 'hover:bg-gray-100/50'} ${id && !isComment ? '' : 'cursor-pointer'} w-full transition-all pt-2`}>
 				<div className="flex w-full">
 					<div className="relative">
 						<p className="border-8 border-white z-10 relative bg-indigo-600 rounded-full text-white py-[6px] px-[15px] w-max h-max text-xl mr-1">{tweet.name.charAt(0)}</p>
-						{tweet.nestedComments.length < 1 ? null : <div className="absolute bg-gray-300 w-[2px] top-0 ml-[26px] h-full"></div>}
+						{tweet.nestedComments.length < 1 || (tweet.nestedComments.length > 0  && window.location.pathname === '/') ? null : <div className="absolute bg-gray-300 w-[2px] top-0 ml-[26px] h-full"></div>}
 					</div>
 					<div className="w-full">
 						<div className={`flex ${id && !isComment ? 'flex-col' : ''}`}>
