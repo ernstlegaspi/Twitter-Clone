@@ -20,7 +20,7 @@ const HomeContent = ({ tweets, user }) => {
 					<SyncLoader size={12} color="#0EA5E9" />
 				</div> : tweets.map(tweet => (
 					<div key={tweet._id}>
-						{tweet.userId !== user._id && tweet.tweetId.length > 0 ? null : <TweetCard tweet={tweet} user={user} />}
+						{(tweet.userId !== user._id && tweet.tweetId.length > 0) || tweet._id === user.pinnedTweet ? null : <TweetCard tweet={tweet} user={user} />}
 					</div>
 				))}
 			</div>

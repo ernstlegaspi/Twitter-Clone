@@ -9,6 +9,8 @@ API.interceptors.request.use(req => {
 	return req
 })
 
+export const pinnedTweet = data => API.put('pinnedTweet/', data)
+export const getPinnedTweet = tweetId => API.get(`pinnedTweet/${tweetId}`)
 export const retweet = data => API.put('retweet/', data)
 export const undoRetweet = data => API.put('retweet/undo/retweet', data)
 export const addTweetIdToUser = data => API.put('retweet/update/user', data)

@@ -7,8 +7,8 @@ import { AiOutlineCalendar } from 'react-icons/ai'
 import { FiArrowLeft } from 'react-icons/fi'
 import { PulseLoader } from 'react-spinners'
 
-import { getTweetsByUsername, getUserLikedTweets } from '../../api/api'
-import { setTweets } from '../../slices/tweet/tweetSlice'
+import { getPinnedTweet, getTweetsByUsername, getUserLikedTweets } from '../../api/api'
+import { setPinnedTweet, setTweets } from '../../slices/tweet/tweetSlice'
 import TweetCard from '../cards/tweetCard'
 
 const ProfilePage = ({ user }) => {
@@ -21,6 +21,7 @@ const ProfilePage = ({ user }) => {
 	const params = useParams()
 	const dispatch = useDispatch()
 	const tweets = useSelector(state => state.tweet.tweets)
+	const pinnedTweet = useSelector(state => state.tweet.pinnedTweet)
 	const navigate = useNavigate()
 	
 	let noTweets = !tweets || Object.keys(tweets).length === 0 || tweets.length === 0
@@ -35,6 +36,14 @@ const ProfilePage = ({ user }) => {
 		}
 
 		getAllTweetsByUser()
+
+		const pinnedTweetGet = async () => {
+			const { data } = await getPinnedTweet(user._id)
+
+			dispatch(setPinnedTweet(data.result.pinnedTweet))
+		}
+
+		pinnedTweetGet()
 	}, [user, params.username, user?._id, dispatch])
 
 	const handleActiveTab = (post, replies, highlights, media, likes) => {
@@ -54,6 +63,7 @@ const ProfilePage = ({ user }) => {
 		const { data } = await getTweetsByUsername(params.username)
 
 		setLoading(false)
+
 		dispatch(setTweets(data.result))
 	}
 
@@ -127,8 +137,11 @@ const ProfilePage = ({ user }) => {
 				</div>
 			</div>
 			<div className="mt-[162px]">
+				{!pinnedTweet ? null : <TweetCard user={user} tweet={pinnedTweet} /> }
 				{noTweets ? null : loading || !user ? <div className="w-full pt-10 flex items-center justify-center"><PulseLoader color="#0EA5E9" /></div> : (
-					tweets.map((tweet, idx) => <TweetCard user={user} key={idx} tweet={tweet} />)
+					<>
+						{pinnedTweet ? tweets.map((tweet, idx) => tweet._id !== pinnedTweet._id ? <TweetCard user={user} key={idx} tweet={tweet} /> : null) : tweets.map((tweet, idx) => <TweetCard user={user} key={idx} tweet={tweet} />)}
+					</>
 				)}
 			</div>
 		</div>

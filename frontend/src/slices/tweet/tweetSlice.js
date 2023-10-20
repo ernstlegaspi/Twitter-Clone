@@ -5,6 +5,7 @@ const tweet = createSlice({
 	initialState: {
 		comments: undefined,
 		nestedComments: undefined,
+		pinnedTweet: undefined,
 		tweets: undefined,
 		tweet: undefined,
 		postForm: false
@@ -16,6 +17,9 @@ const tweet = createSlice({
 		setNestedComments: (state, action) => {
 			state.nestedComments = action.payload
 		},
+		setPinnedTweet: (state, action) => {
+			state.pinnedTweet = action.payload
+		},
 		setTweet: (state, action) => {
 			state.tweet = action.payload
 		},
@@ -25,6 +29,6 @@ const tweet = createSlice({
 	}
 })
 
-export const { setComment, setNestedComments, setTweet, setTweets } = tweet.actions
+export const { setComment, setNestedComments, setPinnedTweet, setTweet, setTweets } = tweet.actions
 
 export default tweet.reducer

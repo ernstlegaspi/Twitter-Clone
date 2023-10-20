@@ -53,7 +53,11 @@ const userSchema = new mongoose.Schema({
 	tweets: [{
 		type: mongoose.Schema.ObjectId,
 		ref: 'Tweet'
-	}]
+	}],
+	pinnedTweet: {
+		type: mongoose.Schema.ObjectId,
+		ref: 'Tweet'
+	}
 }, { timestamps: true })
 
 export default mongoose.model('User', userSchema)

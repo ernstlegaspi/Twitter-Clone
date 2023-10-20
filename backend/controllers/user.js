@@ -86,6 +86,39 @@ export const unlikeTweet = async (req, res) => {
 	}
 }
 
+export const updatePinnedTweet = async (req, res) => {
+	try {
+		const { tweetId, userId } = req.body
+
+		const pinnedTweet = await User.findByIdAndUpdate(userId,
+			{ $push: { pinnedTweet: tweetId } },
+			{ new: true }
+		)
+
+		success(res, pinnedTweet, 'Successfully pinned tweet')
+	}
+	catch(error) {
+		serverError(res)
+	}
+}
+
+export const getPinnedTweet = async (req, res) => {
+	try {
+		const { id } = req.params
+
+		const pinnedTweet = await User.findById({ _id: id })
+		.populate('pinnedTweet')
+		.exec()
+
+		console.log(pinnedTweet)
+
+		success(res, pinnedTweet, 'Pinned Tweet Retrieved')
+	}
+	catch(error) {
+		serverError(res)
+	}
+}
+
 // export const updateUserTweetCount = async (req, res) => {
 // 	try {
 // 		const { id } = req.body
