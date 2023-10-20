@@ -4,7 +4,7 @@ import { AiOutlineClose } from 'react-icons/ai'
 import { useDispatch, useSelector } from 'react-redux'
 
 import { postFormBottomIcon } from '../../constants'
-import { addTweet, getAllTweets, updateUserTweetCount } from '../../api/api'
+import { addTweet, addTweetIdToUser, getAllTweets } from '../../api/api'
 import { setTweets } from '../../slices/tweet/tweetSlice'
 import { toast } from 'react-hot-toast'
 
@@ -21,18 +21,17 @@ const PostForm = ({ showPostForm }) => {
 
 		setDisabled(true)
 
-		addTweet({ body, name: user.name, username: user.username, userId: user._id })
-		.then(() => {
-			setDisabled(false)
-			setBody('')
-			toast.success('Tweet Added')
-		})
+		const { data } = await addTweet({ body, name: user.name, username: user.username, userId: user._id })
 
-		await updateUserTweetCount({ id: user._id })
+		setDisabled(false)
+		setBody('')
+		toast.success('Tweet Added')
 
-		const { data } = await getAllTweets()
+		await addTweetIdToUser({ id: data.result._id, userId: user._id })
+
+		const res = await getAllTweets()
 		
-		dispatch(setTweets(data.result))
+		dispatch(setTweets(res.data.result))
 	}
 
 	const handleBodyChange = e => {

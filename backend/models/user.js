@@ -49,7 +49,11 @@ const userSchema = new mongoose.Schema({
 	followers: {
 		type: Number,
 		default: 0
-	}
+	},
+	tweets: [{
+		type: mongoose.Schema.ObjectId,
+		ref: 'Tweet'
+	}]
 }, { timestamps: true })
 
 export default mongoose.model('User', userSchema)

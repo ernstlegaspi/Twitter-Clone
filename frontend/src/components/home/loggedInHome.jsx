@@ -11,6 +11,7 @@ const HomeContent = lazy(() => import('./components/homeContent'))
 const LoggedInHome = ({ user }) => {
 	const dispatch = useDispatch()
 	const tweets = useSelector(state => state.tweet.tweets)
+	// console.log(tweets)
 
 	useEffect(() => {
 		const getTweetsApi = async () => {

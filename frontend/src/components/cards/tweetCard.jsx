@@ -10,6 +10,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 
 import { likeTweet, unlikeTweet } from '../../api/api'
 import { PulseLoader } from 'react-spinners'
+import RetweetCard from './RetweetCard'
 
 const CommentModal = lazy(() => import('../modals/commentModal'))
 
@@ -18,6 +19,8 @@ const TweetCard = ({ tweet, user, isComment = false }) => {
 	const [_, startTransition] = useTransition()
 	const buttonsHovered = useRef(false)
 	const [showCommentModal, setShowCommentModal] = useState(false)
+	const hasUserRetweeted = useRef(false)
+	const [retweetClick, setRetweetClicked] = useState()
 	const currentHeartIcon = useRef(AiOutlineHeart)
 	const [currentCommentCount, setCurrentCommentCount] = useState(tweet.commentsCount)
 	const currentLikeCount = useRef(0)
@@ -77,7 +80,17 @@ const TweetCard = ({ tweet, user, isComment = false }) => {
 		if(!user) return
 		
 		const userId = tweet.likedUserId.filter(usersId => usersId === user._id)
-		
+
+		tweet.retweetUserId.map(retweetId => {
+			if(retweetId === user._id) {
+				hasUserRetweeted.current = true
+
+				return true
+			}
+
+			return false
+		})
+
 		setCurrentCommentCount(tweet.commentsCount)
 
 		if(userId[0]) {
@@ -89,19 +102,23 @@ const TweetCard = ({ tweet, user, isComment = false }) => {
 		}
 
 		currentLikeCount.current = tweet.likedUserId.length
-	}, [user, tweet?.likedUserId, tweet.commentsCount, tweet?._id, user?._id])
+	}, [user, tweet?.likedUserId, tweet?.retweetUserId, tweet?.commentsCount, tweet?._id, user?._id])
 
 	return (
 		<>
-			<div onClick={() => (id && !isComment) || (isComment && buttonsHovered.current) || (window.location.pathname === '/' && buttonsHovered.current) ? null : navigate(`/${tweet.username}/status/${tweet._id}`)} className={`${tweet.nestedComments < 1 || (tweet.nestedComments.length > 0  && window.location.pathname === '/') ? 'border-b' : ''} border-color ${id && !isComment ? '' : 'hover:bg-gray-100/50'} ${id && !isComment ? '' : 'cursor-pointer'} w-full transition-all pt-2`}>
+			<div id="tweet-card" onClick={() => (id && !isComment) || (isComment && buttonsHovered.current) || (window.location.pathname === '/' && buttonsHovered.current) ? null : navigate(`/${tweet.username}/status/${tweet.uniqueId}`)} className={`${tweet.nestedComments.length < 1 || (tweet.nestedComments.length > 0  && window.location.pathname === '/') ? 'border-b' : ''} border-color ${id && !isComment ? '' : 'hover:bg-gray-100/50'} ${id && !isComment ? '' : 'cursor-pointer'} w-full transition-all pt-2`}>
 				<div className="flex w-full">
-					<div className="relative">
-						<p className="border-8 border-white z-10 relative bg-indigo-600 rounded-full text-white py-[6px] px-[15px] w-max h-max text-xl mr-1">{tweet.name.charAt(0)}</p>
+					<div>
+						{hasUserRetweeted.current ? <div className="flex justify-end w-full text-gray-500 pr-2 pt-[3px]">
+							<AiOutlineRetweet />
+						</div> : null}
+						<p className="border-8 border-white bg-indigo-600 rounded-full text-white py-[6px] px-[15px] w-max h-max text-xl mr-1">{tweet.name.charAt(0)}</p>
 						{tweet.nestedComments.length < 1 || (tweet.nestedComments.length > 0  && window.location.pathname === '/') ? null : <div className="absolute bg-gray-300 w-[2px] top-0 ml-[26px] h-full"></div>}
 					</div>
 					<div className="w-full">
+						{hasUserRetweeted.current ? <p className="text-[12px] text-gray-500 font-bold">You reposted</p> : null}
 						<div className={`flex ${id && !isComment ? 'flex-col' : ''}`}>
-							<p className="font-bold text-[15px]">{tweet.name}</p>
+							<p className="font-bold text-[15px] text-gray-700">{tweet.name}</p>
 							<p className={`text-gray-500 ${id && !isComment ? 'mx-[-2px] text-sm' : 'mx-1'}`}>@{tweet.username}</p>
 							{id && !isComment ? null : (
 								<p className="text-gray-500">· {
@@ -118,7 +135,7 @@ const TweetCard = ({ tweet, user, isComment = false }) => {
 								<p className="leading-5 text-slate-600">{tweet.body}</p>
 								<div className="w-[90%] flex justify-between mt-3 mb-2">
 									{Buttons(() => startTransition(() => setShowCommentModal(true)), 'bg-sky-500/10', 'text-sky-500', FaRegComment, false, currentCommentCount < 1 ? '' : currentCommentCount)}
-									{Buttons(() => {}, 'bg-green-400/10', 'text-green-400', AiOutlineRetweet, false, '', tweet.userId !== user._id)}
+									{Buttons(() => setRetweetClicked(prev => !prev), 'bg-green-400/10', 'text-green-400', AiOutlineRetweet, hasUserRetweeted.current, tweet.retweetUserId.length < 1 ? '' : tweet.retweetUserId.length, tweet.userId !== user._id)}
 									{Buttons(handleHeartButton, 'bg-pink-500/10', 'text-pink-500', currentHeartIcon.current, isLiked, currentLikeCount.current < 1 ? '' : currentLikeCount.current)}
 									{Buttons(() => {}, 'bg-yellow-400/10', 'text-yellow-400', BsBookmark, false, '')}
 								</div>
@@ -134,7 +151,7 @@ const TweetCard = ({ tweet, user, isComment = false }) => {
 						</div>
 						<div className="w-full flex justify-between mt-3 mb-2 px-2 border-t border-color pt-2">
 							{Buttons(() => startTransition(() => setShowCommentModal(true)), 'bg-sky-500/10', 'text-sky-500', FaRegComment, false, currentCommentCount < 1 ? '' : currentCommentCount)}
-							{Buttons(() => {}, 'bg-green-400/10', 'text-green-400', AiOutlineRetweet, false, '', tweet.userId !== user._id)}
+							{Buttons(() => {}, 'bg-green-400/10', 'text-green-400', AiOutlineRetweet, hasUserRetweeted.current, tweet.retweetUserId.length < 1 ? '' : tweet.retweetUserId.length, tweet.userId !== user._id)}
 							{Buttons(handleHeartButton, 'bg-pink-500/10', 'text-pink-500', currentHeartIcon.current, isLiked, currentLikeCount.current < 1 ? '' : currentLikeCount.current)}
 							{Buttons(() => {}, 'bg-yellow-400/10', 'text-yellow-400', BsBookmark, false, '')}
 						</div>
@@ -147,6 +164,9 @@ const TweetCard = ({ tweet, user, isComment = false }) => {
 				</div>
 			}>
 				<CommentModal currentCommentCount={setCurrentCommentCount} user={user} tweet={tweet} showCommentModal={setShowCommentModal} />
+			</Suspense> : null}
+			{retweetClick ? <Suspense fallback={<p>Loading...</p>}>
+				<RetweetCard user={user} tweet={tweet} setRetweetClicked={setRetweetClicked} />
 			</Suspense> : null}
 		</>
 	)

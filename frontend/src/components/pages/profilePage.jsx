@@ -26,15 +26,16 @@ const ProfilePage = ({ user }) => {
 	let noTweets = !tweets || Object.keys(tweets).length === 0 || tweets.length === 0
 
 	useEffect(() => {
-		const getUserTweets = async () => {
+		if(!user) return
+		
+		const getAllTweetsByUser = async () => {
 			const { data } = await getTweetsByUsername(params.username)
 
-			dispatch(setTweets(data.result))
-			handleActiveTab(true, false, false, false, false)
+			dispatch(setTweets(data.result.tweets.reverse()))
 		}
 
-		getUserTweets()
-	}, [params.username, dispatch])
+		getAllTweetsByUser()
+	}, [user, params.username, user?._id, dispatch])
 
 	const handleActiveTab = (post, replies, highlights, media, likes) => {
 		setPostTab(post)
@@ -50,11 +51,10 @@ const ProfilePage = ({ user }) => {
 		handleActiveTab(true, false, false, false, false)
 		setLoading(true)
 
-		getTweetsByUsername(params.username)
-		.then(({ data }) => {
-			setLoading(false)
-			dispatch(setTweets(data.result))
-		})
+		const { data } = await getTweetsByUsername(params.username)
+
+		setLoading(false)
+		dispatch(setTweets(data.result))
 	}
 
 	const handleLikesButton = async () => {
@@ -117,7 +117,7 @@ const ProfilePage = ({ user }) => {
 						{formattedText(user.following, "Following")}
 						{formattedText(user.followers, user.followers < 2 ? "Follower" : "Followers")}
 					</div>
-					<div className={`flex justify-between items-center mt-3 ${noTweets ? 'border-b' : ''} border-color`}>
+					<div className='flex justify-between items-center mt-3 border-b border-color'>
 						{menu(handlePostButton, "Posts", postTab, 'w-[60px]')}
 						{menu(() => {}, "Replies", repliesTab, 'w-[70px]')}
 						{menu(() => {}, "Highlights", highlightsTab, 'w-[90px]')}
@@ -126,9 +126,9 @@ const ProfilePage = ({ user }) => {
 					</div>
 				</div>
 			</div>
-			<div className="mt-[162px] relative z-20">
+			<div className="mt-[162px]">
 				{noTweets ? null : loading || !user ? <div className="w-full pt-10 flex items-center justify-center"><PulseLoader color="#0EA5E9" /></div> : (
-					tweets.map(tweet => <TweetCard user={user} key={tweet._id} tweet={tweet} />)
+					tweets.map((tweet, idx) => <TweetCard user={user} key={idx} tweet={tweet} />)
 				)}
 			</div>
 		</div>

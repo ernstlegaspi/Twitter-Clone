@@ -86,22 +86,22 @@ export const unlikeTweet = async (req, res) => {
 	}
 }
 
-export const updateUserTweetCount = async (req, res) => {
-	try {
-		const { id } = req.body
+// export const updateUserTweetCount = async (req, res) => {
+// 	try {
+// 		const { id } = req.body
 
-		const user = await User.findById({ _id: id })
+// 		const user = await User.findById({ _id: id })
 
-		const updatedUser = await User.findOneAndUpdate({ _id: id }, { tweetCount: user.tweetCount + 1 })
+// 		const updatedUser = await User.findOneAndUpdate({ _id: id }, { tweetCount: user.tweetCount + 1 })
 
-		if(!user) return serverError(res)
+// 		if(!user) return serverError(res)
 
-		success(res, updatedUser, 'Tweet count updated')
-	}
-	catch(error) {
-		serverError(res)
-	}
-}
+// 		success(res, updatedUser, 'Tweet count updated')
+// 	}
+// 	catch(error) {
+// 		serverError(res)
+// 	}
+// }
 
 // OTP
 export const generateOtp = (req, res) => {

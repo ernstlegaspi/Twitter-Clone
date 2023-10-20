@@ -21,10 +21,6 @@ const tweetSchema = new mongoose.Schema({
 		type: String,
 		default: ''
 	},
-	likeCount: {
-		type: Number,
-		default: 0
-	},
 	bookmarkCount: {
 		type: Number,
 		default: 0
@@ -47,6 +43,8 @@ const tweetSchema = new mongoose.Schema({
 	}],
 	likedUserId: [String],
 	commentsId: [String],
+	retweetUserId: [String],
+	uniqueId: String
 }, { timestamps: true })
 
 export default mongoose.model('Tweet', tweetSchema)

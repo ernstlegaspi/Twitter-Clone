@@ -18,6 +18,7 @@ const auth = createSlice({
 		},
 		setOtp: (state, action) => {
 			state.otp = action.payload
+			console.log(action.payload)
 		}
 	}
 })

@@ -9,6 +9,10 @@ API.interceptors.request.use(req => {
 	return req
 })
 
+export const retweet = data => API.put('retweet/', data)
+export const addTweetIdToUser = data => API.put('retweet/update/user', data)
+export const getTweetsByUsername = id => API.get(`retweet/${id}`)
+
 export const addComment = data => API.post('tweet/comment', data)
 export const addNestedComment = data => API.post('tweet/nestedComments', data)
 export const getNestedComments = () => API.get('tweet/nested/comments')
@@ -19,10 +23,8 @@ export const likeTweet = data => API.put('tweet/', data)
 export const unlikeTweet = data => API.put('tweet/unlike', data)
 export const getAllTweets = () => API.get('tweet/')
 export const getSingleTweet = id => API.get(`tweet/singleTweet/${id}`)
-export const getTweetsByUsername = username => API.get(`tweet/${username}`)
 
 export const getCurrentUser = id => API.get(`user/${id}`)
-export const updateUserTweetCount = id => API.put(`user/updateTweetCount`, id)
 export const getUserLikedTweets = username => API.get(`user/likedTweets/${username}`)
 
 export const loginApi = data => API.post('auth/login', data)
