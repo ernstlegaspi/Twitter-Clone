@@ -10,6 +10,7 @@ API.interceptors.request.use(req => {
 })
 
 export const retweet = data => API.put('retweet/', data)
+export const undoRetweet = data => API.put('retweet/undo/retweet', data)
 export const addTweetIdToUser = data => API.put('retweet/update/user', data)
 export const getTweetsByUsername = id => API.get(`retweet/${id}`)
 

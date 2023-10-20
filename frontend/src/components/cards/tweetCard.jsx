@@ -24,7 +24,7 @@ const TweetCard = ({ tweet, user, isComment = false }) => {
 	const currentHeartIcon = useRef(AiOutlineHeart)
 	const [currentCommentCount, setCurrentCommentCount] = useState(tweet.commentsCount)
 	const currentLikeCount = useRef(0)
-	const { id } = useParams()
+	const { id, username } = useParams()
 	const navigate = useNavigate()
 
 	const [isLiked, setIsLiked] = useState(false)
@@ -78,8 +78,6 @@ const TweetCard = ({ tweet, user, isComment = false }) => {
 
 	useEffect(() => {
 		if(!user) return
-		
-		const userId = tweet.likedUserId.filter(usersId => usersId === user._id)
 
 		tweet.retweetUserId.map(retweetId => {
 			if(retweetId === user._id) {
@@ -88,10 +86,14 @@ const TweetCard = ({ tweet, user, isComment = false }) => {
 				return true
 			}
 
+			hasUserRetweeted.current = false
+
 			return false
 		})
 
 		setCurrentCommentCount(tweet.commentsCount)
+
+		const userId = tweet.likedUserId.filter(usersId => usersId === user._id)
 
 		if(userId[0]) {
 			currentHeartIcon.current = AiFillHeart
@@ -106,7 +108,7 @@ const TweetCard = ({ tweet, user, isComment = false }) => {
 
 	return (
 		<>
-			<div id="tweet-card" onClick={() => (id && !isComment) || (isComment && buttonsHovered.current) || (window.location.pathname === '/' && buttonsHovered.current) ? null : navigate(`/${tweet.username}/status/${tweet.uniqueId}`)} className={`${tweet.nestedComments.length < 1 || (tweet.nestedComments.length > 0  && window.location.pathname === '/') ? 'border-b' : ''} border-color ${id && !isComment ? '' : 'hover:bg-gray-100/50'} ${id && !isComment ? '' : 'cursor-pointer'} w-full transition-all pt-2`}>
+			<div id="tweet-card" onClick={() => (id && !isComment) || (username && !isComment && buttonsHovered.current) || (isComment && buttonsHovered.current) || (window.location.pathname === '/' && buttonsHovered.current) ? null : navigate(`/${tweet.username}/status/${tweet.uniqueId}`)} className={`${tweet.nestedComments.length < 1 || (tweet.nestedComments.length > 0  && window.location.pathname === '/') ? 'border-b' : ''} border-color ${id && !isComment ? '' : 'hover:bg-gray-100/50'} ${id && !isComment ? '' : 'cursor-pointer'} w-full transition-all pt-2`}>
 				<div className="flex w-full">
 					<div>
 						{hasUserRetweeted.current ? <div className="flex justify-end w-full text-gray-500 pr-2 pt-[3px]">
@@ -166,7 +168,7 @@ const TweetCard = ({ tweet, user, isComment = false }) => {
 				<CommentModal currentCommentCount={setCurrentCommentCount} user={user} tweet={tweet} showCommentModal={setShowCommentModal} />
 			</Suspense> : null}
 			{retweetClick ? <Suspense fallback={<p>Loading...</p>}>
-				<RetweetCard user={user} tweet={tweet} setRetweetClicked={setRetweetClicked} />
+				<RetweetCard hasUserRetweeted={hasUserRetweeted} user={user} tweet={tweet} setRetweetClicked={setRetweetClicked} />
 			</Suspense> : null}
 		</>
 	)

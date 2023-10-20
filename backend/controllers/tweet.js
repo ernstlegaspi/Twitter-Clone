@@ -155,3 +155,24 @@ export const addTweetIdToUser = async (req, res) => {
 		serverError(res)
 	}
 }
+
+export const undoRetweet = async (req, res) => {
+	try {
+		const { id, userId } = req.body
+
+		await User.findByIdAndUpdate(userId,
+			{ $pull: { tweets: id } },
+			{ new: true }
+		)
+
+		await Tweet.findByIdAndUpdate(id,
+			{ $pull: { retweetUserId: userId } },
+			{ new: true }
+		)
+
+		success(res, {}, 'User Updated')
+	}
+	catch(error) {
+		serverError(res)
+	}
+}
