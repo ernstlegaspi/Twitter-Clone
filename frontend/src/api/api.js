@@ -9,6 +9,8 @@ API.interceptors.request.use(req => {
 	return req
 })
 
+export const deleteTweet = data => API.post('deleteTweet/', data)
+
 export const pinnedTweet = data => API.put('pinnedTweet/', data)
 export const removePinnedTweet = data => API.put('pinnedTweetRemove/', data)
 export const getPinnedTweet = tweetId => API.get(`pinnedTweet/${tweetId}`)

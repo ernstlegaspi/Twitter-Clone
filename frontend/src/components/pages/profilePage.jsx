@@ -18,6 +18,7 @@ const ProfilePage = ({ user }) => {
 	const [mediaTab, setMediaTab] = useState(false)
 	const [likesTab, setLikesTab] = useState(false)
 	const [loading, setLoading] = useState(false)
+	const [getTweetCount, setTweetCount] = useState(0)
 	const pinnedTweetLoading = useRef(false)
 	const params = useParams()
 	const dispatch = useDispatch()
@@ -29,6 +30,8 @@ const ProfilePage = ({ user }) => {
 
 	useEffect(() => {
 		if(!user) return
+
+		setTweetCount(user.tweetCount)
 		
 		const getAllTweetsByUser = async () => {
 			const { data } = await getTweetsByUsername(params.username)
@@ -109,7 +112,7 @@ const ProfilePage = ({ user }) => {
 							<p className="mr-1 font-semibold text-xl">{user.name}</p>
 							<p className="mt-1 text-gray-500 text-sm">@{user.username}</p>
 						</div>
-						<p className="text-gray-500 text-sm">{user.tweetCount} {user.tweetCount < 2 ? "post" : "posts"}</p>
+						<p className="text-gray-500 text-sm">{getTweetCount} {getTweetCount < 2 ? "post" : "posts"}</p>
 					</div>
 					<div className="flex items-center text-gray-500 text-sm">
 						<AiOutlineCalendar size={18} />
@@ -144,8 +147,8 @@ const ProfilePage = ({ user }) => {
 			<div className="mt-[162px]">
 				{noTweets ? null : loading || !user || pinnedTweetLoading.current ? <div className="w-full pt-10 flex items-center justify-center"><PulseLoader color="#0EA5E9" /></div> : (
 					<>
-						{!pinnedTweet ? null : <TweetCard isPinnedTweet={true} user={user} tweet={pinnedTweet} />}
-						{pinnedTweet ? tweets.map((tweet, idx) => tweet._id !== pinnedTweet._id ? <TweetCard user={user} key={idx} tweet={tweet} /> : null) : tweets.map((tweet, idx) => <TweetCard user={user} key={idx} tweet={tweet} />)}
+						{!pinnedTweet ? null : <TweetCard setTweetCount={setTweetCount} isPinnedTweet={true} user={user} tweet={pinnedTweet} />}
+						{pinnedTweet ? tweets.map((tweet, idx) => tweet._id !== pinnedTweet._id ? <TweetCard setTweetCount={setTweetCount} user={user} key={idx} tweet={tweet} /> : null) : tweets.map((tweet, idx) => <TweetCard setTweetCount={setTweetCount} user={user} key={idx} tweet={tweet} />)}
 					</>
 				)}
 			</div>

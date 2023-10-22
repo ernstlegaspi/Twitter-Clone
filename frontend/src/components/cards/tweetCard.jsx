@@ -9,7 +9,7 @@ import { FaRegComment } from 'react-icons/fa'
 
 import { useNavigate, useParams } from 'react-router-dom'
 
-import { likeTweet, pinnedTweet, removePinnedTweet, unlikeTweet } from '../../api/api'
+import { deleteTweet, likeTweet, pinnedTweet, removePinnedTweet, unlikeTweet } from '../../api/api'
 import { PulseLoader } from 'react-spinners'
 import RetweetCard from './RetweetCard'
 import { setPinnedTweet } from '../../slices/tweet/tweetSlice'
@@ -18,13 +18,14 @@ import toast from 'react-hot-toast'
 
 const CommentModal = lazy(() => import('../modals/commentModal'))
 
-const TweetCard = ({ tweet, user, isComment = false, isPinnedTweet = false }) => {
+const TweetCard = ({ tweet, user, isComment = false, isPinnedTweet = false, setTweetCount }) => {
 	// eslint-disable-next-line
 	const [_, startTransition] = useTransition()
 	const buttonsHovered = useRef(false)
 	const [showDropdown, setShowDropdown] = useState(false)
 	const [showCommentModal, setShowCommentModal] = useState(false)
 	const [dropdownItemsHovered, setDropdownItemsHovered] = useState(false)
+	const [deleteClicked, setDeleteClicked] = useState(false)
 	const hasPinnedTweet = useRef(false)
 	const hasUserRetweeted = useRef(false)
 	const [retweetClick, setRetweetClicked] = useState()
@@ -119,6 +120,17 @@ const TweetCard = ({ tweet, user, isComment = false, isPinnedTweet = false }) =>
 		}
 	}
 
+	const handleDeleteTweet = async () => {
+		try {
+			await deleteTweet({ tweetId: tweet._id, userId: user._id })
+		}
+		catch(error) {
+			toast.error('Error deleting tweet')
+			setDeleteClicked(false)
+			setTweetCount(user.tweetCount)
+		}
+	}
+
 	useEffect(() => {
 		if(!user) return
 
@@ -151,7 +163,7 @@ const TweetCard = ({ tweet, user, isComment = false, isPinnedTweet = false }) =>
 
 	return (
 		<>
-			<div id="tweet-card" onClick={() => showDropdown || (id && !isComment) || (username && !isComment && buttonsHovered.current) || (isComment && buttonsHovered.current) || (window.location.pathname === '/' && buttonsHovered.current) ? null : navigate(`/${tweet.username}/status/${tweet.uniqueId}`)} className={`${tweet.nestedComments.length < 1 || (tweet.nestedComments.length > 0  && window.location.pathname === '/') ? 'border-b' : ''} border-color ${(id && !isComment) || dropdownItemsHovered ? '' : 'hover:bg-gray-100/50'} ${id && !isComment ? '' : 'cursor-pointer'} w-full transition-all pt-2`}>
+			<div id="tweet-card" onClick={() => showDropdown || (id && !isComment) || (username && !isComment && buttonsHovered.current) || (isComment && buttonsHovered.current) || (window.location.pathname === '/' && buttonsHovered.current) ? null : navigate(`/${tweet.username}/status/${tweet.uniqueId}`)} className={`${tweet.nestedComments.length < 1 || (tweet.nestedComments.length > 0  && window.location.pathname === '/') ? 'border-b' : ''} border-color ${(id && !isComment) || dropdownItemsHovered ? '' : 'hover:bg-gray-100/50'} ${id && !isComment ? '' : 'cursor-pointer'} ${deleteClicked ? 'hidden' : ''} w-full transition-all pt-2`}>
 				<div className="flex w-full">
 					<div>
 						{hasUserRetweeted.current || tweet._id === user.pinnedTweet || hasPinnedTweet.current || isPinnedTweet ? <div className="flex justify-end w-full text-gray-500 pr-2 pt-[3px]">
@@ -181,7 +193,12 @@ const TweetCard = ({ tweet, user, isComment = false, isPinnedTweet = false }) =>
 							</div>
 							{showDropdown ? (
 								<div className="absolute bg-white rounded-md shadow shadow-black/40 right-[18px] mt-[95px]">
-									{dropdownItem(() => {}, BsTrash, 'Delete', 'text-red-500')}
+									{dropdownItem(() => {
+										setShowDropdown(false)
+										setDeleteClicked(true)
+										setTweetCount(prev => prev - 1)
+										handleDeleteTweet()
+									}, BsTrash, 'Delete', 'text-red-500')}
 									{dropdownItem(() => {
 										hasPinnedTweet.current = !hasPinnedTweet.current
 										handlePinnedTweet()

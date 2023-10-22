@@ -176,3 +176,21 @@ export const undoRetweet = async (req, res) => {
 		serverError(res)
 	}
 }
+
+export const deleteTweet = async (req, res) => {
+	try {
+		const { tweetId, userId } = req.body
+
+		await Tweet.findByIdAndDelete(({ _id: tweetId }))
+		
+		await User.findByIdAndUpdate(userId,
+			{ $inc: { tweetCount: -1 } },
+			{ $new: true }
+		)
+
+		success(res, {}, 'Tweet deleted', 204)
+	}
+	catch(error) {
+		serverError(res)
+	}
+}

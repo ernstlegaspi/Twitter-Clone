@@ -97,8 +97,6 @@ export const updatePinnedTweet = async (req, res) => {
 		.populate('pinnedTweet')
 		.exec()
 
-		console.log(pinnedTweet)
-
 		success(res, pinnedTweet, 'Successfully pinned tweet')
 	}
 	catch(error) {
