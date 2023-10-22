@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 
 import moment from 'moment'
 import { useDispatch, useSelector } from 'react-redux'
@@ -18,6 +18,7 @@ const ProfilePage = ({ user }) => {
 	const [mediaTab, setMediaTab] = useState(false)
 	const [likesTab, setLikesTab] = useState(false)
 	const [loading, setLoading] = useState(false)
+	const pinnedTweetLoading = useRef(false)
 	const params = useParams()
 	const dispatch = useDispatch()
 	const tweets = useSelector(state => state.tweet.tweets)
@@ -38,9 +39,13 @@ const ProfilePage = ({ user }) => {
 		getAllTweetsByUser()
 
 		const pinnedTweetGet = async () => {
+			pinnedTweetLoading.current = true
+
 			const { data } = await getPinnedTweet(user._id)
 
 			dispatch(setPinnedTweet(data.result.pinnedTweet))
+
+			pinnedTweetLoading.current = false
 		}
 
 		pinnedTweetGet()
@@ -137,9 +142,9 @@ const ProfilePage = ({ user }) => {
 				</div>
 			</div>
 			<div className="mt-[162px]">
-				{!pinnedTweet ? null : <TweetCard user={user} tweet={pinnedTweet} /> }
-				{noTweets ? null : loading || !user ? <div className="w-full pt-10 flex items-center justify-center"><PulseLoader color="#0EA5E9" /></div> : (
+				{noTweets ? null : loading || !user || pinnedTweetLoading.current ? <div className="w-full pt-10 flex items-center justify-center"><PulseLoader color="#0EA5E9" /></div> : (
 					<>
+						{!pinnedTweet ? null : <TweetCard isPinnedTweet={true} user={user} tweet={pinnedTweet} />}
 						{pinnedTweet ? tweets.map((tweet, idx) => tweet._id !== pinnedTweet._id ? <TweetCard user={user} key={idx} tweet={tweet} /> : null) : tweets.map((tweet, idx) => <TweetCard user={user} key={idx} tweet={tweet} />)}
 					</>
 				)}

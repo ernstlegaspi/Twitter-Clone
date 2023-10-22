@@ -9,21 +9,23 @@ import { FaRegComment } from 'react-icons/fa'
 
 import { useNavigate, useParams } from 'react-router-dom'
 
-import { likeTweet, pinnedTweet, unlikeTweet } from '../../api/api'
+import { likeTweet, pinnedTweet, removePinnedTweet, unlikeTweet } from '../../api/api'
 import { PulseLoader } from 'react-spinners'
 import RetweetCard from './RetweetCard'
 import { setPinnedTweet } from '../../slices/tweet/tweetSlice'
 import { useDispatch } from 'react-redux'
+import toast from 'react-hot-toast'
 
 const CommentModal = lazy(() => import('../modals/commentModal'))
 
-const TweetCard = ({ tweet, user, isComment = false }) => {
+const TweetCard = ({ tweet, user, isComment = false, isPinnedTweet = false }) => {
 	// eslint-disable-next-line
 	const [_, startTransition] = useTransition()
 	const buttonsHovered = useRef(false)
 	const [showDropdown, setShowDropdown] = useState(false)
 	const [showCommentModal, setShowCommentModal] = useState(false)
 	const [dropdownItemsHovered, setDropdownItemsHovered] = useState(false)
+	const hasPinnedTweet = useRef(false)
 	const hasUserRetweeted = useRef(false)
 	const [retweetClick, setRetweetClicked] = useState()
 	const currentHeartIcon = useRef(AiOutlineHeart)
@@ -61,7 +63,7 @@ const TweetCard = ({ tweet, user, isComment = false }) => {
 	const dropdownItem = (onClick, Icon, label, color) => (
 		<div onMouseEnter={() => setDropdownItemsHovered(true)} onMouseLeave={() => setDropdownItemsHovered(false)} onClick={onClick} className={`hover:bg-gray-100/50 cursor-pointer transition-all w-full flex items-center ${color} px-4 py-2 z-50`}>
 			<Icon size={15} />
-			<p className="font-bold mt-[-1px] ml-2">{label}</p>
+			<p className="font-semibold mt-[-1px] ml-2">{label}</p>
 		</div>
 	)
 
@@ -90,14 +92,36 @@ const TweetCard = ({ tweet, user, isComment = false }) => {
 	}
 
 	const handlePinnedTweet = async () => {
-		const { data } = await pinnedTweet({ tweetId: tweet._id, userId: user._id })
+		let res = null
+		
+		if(tweet._id !== user.pinnedTweet) {
+			try {
+				res = await pinnedTweet({ tweetId: tweet._id, userId: user._id })
+				dispatch(setPinnedTweet(res.data.result.pinnedTweet))
+			}
+			catch(error) {
+				toast.error('Error making this tweet pinned')
+				hasPinnedTweet.current = false
+				dispatch(setPinnedTweet(null))
+			}
 
-		dispatch(setPinnedTweet(data.result))
+			return
+		}
+
+		try {
+			res = await removePinnedTweet({ tweetId: tweet._id, userId: user._id })
+			dispatch(setPinnedTweet(null))
+		}
+		catch(error) {
+			toast.error('Error making undo pinned tweet')
+			hasPinnedTweet.current = true
+			dispatch(setPinnedTweet(res.data.result.pinnedTweet))
+		}
 	}
 
 	useEffect(() => {
 		if(!user) return
- 
+
 		tweet.retweetUserId.map(retweetId => {
 			if(retweetId === user._id) {
 				hasUserRetweeted.current = true
@@ -127,17 +151,17 @@ const TweetCard = ({ tweet, user, isComment = false }) => {
 
 	return (
 		<>
-			<div id="tweet-card" onClick={() => (id && !isComment) || (username && !isComment && buttonsHovered.current) || (isComment && buttonsHovered.current) || (window.location.pathname === '/' && buttonsHovered.current) ? null : navigate(`/${tweet.username}/status/${tweet.uniqueId}`)} className={`${tweet.nestedComments.length < 1 || (tweet.nestedComments.length > 0  && window.location.pathname === '/') ? 'border-b' : ''} border-color ${(id && !isComment) || dropdownItemsHovered ? '' : 'hover:bg-gray-100/50'} ${id && !isComment ? '' : 'cursor-pointer'} w-full transition-all pt-2`}>
+			<div id="tweet-card" onClick={() => showDropdown || (id && !isComment) || (username && !isComment && buttonsHovered.current) || (isComment && buttonsHovered.current) || (window.location.pathname === '/' && buttonsHovered.current) ? null : navigate(`/${tweet.username}/status/${tweet.uniqueId}`)} className={`${tweet.nestedComments.length < 1 || (tweet.nestedComments.length > 0  && window.location.pathname === '/') ? 'border-b' : ''} border-color ${(id && !isComment) || dropdownItemsHovered ? '' : 'hover:bg-gray-100/50'} ${id && !isComment ? '' : 'cursor-pointer'} w-full transition-all pt-2`}>
 				<div className="flex w-full">
 					<div>
-						{hasUserRetweeted.current || tweet._id === user.pinnedTweet ? <div className="flex justify-end w-full text-gray-500 pr-2 pt-[3px]">
+						{hasUserRetweeted.current || tweet._id === user.pinnedTweet || hasPinnedTweet.current || isPinnedTweet ? <div className="flex justify-end w-full text-gray-500 pr-2 pt-[3px]">
 							{hasUserRetweeted.current ? <AiOutlineRetweet /> : <BsPinFill />}
 						</div> : null}
 						<p className="border-8 border-white bg-indigo-600 rounded-full text-white py-[6px] px-[15px] w-max h-max text-xl mr-1">{tweet.name.charAt(0)}</p>
 						{tweet.nestedComments.length < 1 || (tweet.nestedComments.length > 0  && window.location.pathname === '/') ? null : <div className="absolute bg-gray-300 w-[2px] top-0 ml-[26px] h-full"></div>}
 					</div>
 					<div className="w-full relative">
-						{tweet._id === user.pinnedTweet || hasUserRetweeted.current ? <p className="text-sm text-gray-500 font-bold">{hasUserRetweeted.current ? 'You reposted' : 'Pinned post'}</p> : null}
+						{tweet._id === user.pinnedTweet || hasPinnedTweet.current || isPinnedTweet || hasUserRetweeted.current ? <p className="text-sm text-gray-500 font-bold">{hasUserRetweeted.current ? 'You reposted' : 'Pinned post'}</p> : null}
 						<div className="w-full flex justify-between items-center relative">
 							<div className={`flex ${id && !isComment ? 'flex-col' : ''}`}>
 								<p className="font-bold text-[15px] text-gray-700">{tweet.name}</p>
@@ -158,7 +182,10 @@ const TweetCard = ({ tweet, user, isComment = false }) => {
 							{showDropdown ? (
 								<div className="absolute bg-white rounded-md shadow shadow-black/40 right-[18px] mt-[95px]">
 									{dropdownItem(() => {}, BsTrash, 'Delete', 'text-red-500')}
-									{dropdownItem(handlePinnedTweet, BsPin, 'Pin to your profile', 'text-black')}
+									{dropdownItem(() => {
+										hasPinnedTweet.current = !hasPinnedTweet.current
+										handlePinnedTweet()
+									}, BsPin, tweet._id === user.pinnedTweet || hasPinnedTweet.current || isPinnedTweet ? 'Unpin from profile' : 'Pin to your profile', 'text-black')}
 								</div>
 							) : null}
 						</div>

@@ -94,8 +94,28 @@ export const updatePinnedTweet = async (req, res) => {
 			{ $push: { pinnedTweet: tweetId } },
 			{ new: true }
 		)
+		.populate('pinnedTweet')
+		.exec()
+
+		console.log(pinnedTweet)
 
 		success(res, pinnedTweet, 'Successfully pinned tweet')
+	}
+	catch(error) {
+		serverError(res)
+	}
+}
+
+export const removePinnedTweet = async (req, res) => {
+	try {
+		const { tweetId, userId } = req.body
+
+		const pinnedTweet = await User.findByIdAndUpdate(userId,
+			{ $pull: { pinnedTweet: tweetId } },
+			{ new: true }
+		)
+
+		success(res, pinnedTweet, 'Successfully remove pinned tweet')
 	}
 	catch(error) {
 		serverError(res)
@@ -110,31 +130,12 @@ export const getPinnedTweet = async (req, res) => {
 		.populate('pinnedTweet')
 		.exec()
 
-		console.log(pinnedTweet)
-
 		success(res, pinnedTweet, 'Pinned Tweet Retrieved')
 	}
 	catch(error) {
 		serverError(res)
 	}
 }
-
-// export const updateUserTweetCount = async (req, res) => {
-// 	try {
-// 		const { id } = req.body
-
-// 		const user = await User.findById({ _id: id })
-
-// 		const updatedUser = await User.findOneAndUpdate({ _id: id }, { tweetCount: user.tweetCount + 1 })
-
-// 		if(!user) return serverError(res)
-
-// 		success(res, updatedUser, 'Tweet count updated')
-// 	}
-// 	catch(error) {
-// 		serverError(res)
-// 	}
-// }
 
 // OTP
 export const generateOtp = (req, res) => {
