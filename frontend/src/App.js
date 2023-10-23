@@ -16,6 +16,7 @@ const LogoutModal = lazy(() => import('./components/modals/logoutModal'))
 const PostFormModal = lazy(() => import('./components/modals/postFormModal'))
 
 // Pages
+const NotificationPage = lazy(() => import('./components/pages/notificationPage'))
 const ProfilePage = lazy(() => import('./components/pages/profilePage'))
 const TweetPage = lazy(() => import('./components/pages/tweetPage'))
 
@@ -23,9 +24,14 @@ const TweetPage = lazy(() => import('./components/pages/tweetPage'))
 	TODO
 	1. Retweet - Done
 	2. Pin Tweet - Done
-	3. Delete Tweet - In progress
-	4. Notifications - Waiting
+	3. Delete Tweet - Done
+	4. Notifications - In progress
 	5. Bookmarks - Waiting
+	6. Followers - Waiting
+	7. Following - Waiting
+	8. Messages - Waiting
+	9. Google Login - Waiting
+	10. Facebook Login - Waiting
 */
 
 const App = () => {
@@ -72,6 +78,7 @@ const App = () => {
 					{showLogoutModal ? <LogoutModal showLogoutModal={setShowLogoutModal} /> : null}
 					<Routes>
 						<Route path='/' element={<Home user={user} />} />
+						<Route path='/notifications' element={<NotificationPage user={user} />} />
 						<Route path='/:username' element={<ProfilePage user={user} />} />
 						<Route path='/:username/status/:id' element={<TweetPage user={user} />} />
 					</Routes>

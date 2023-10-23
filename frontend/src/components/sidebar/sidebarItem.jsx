@@ -1,34 +1,53 @@
 import React, { useState, useRef } from 'react'
 
-// import { AiFillBell } from 'react-icons/ai'
 import { BsFillHouseDoorFill, BsFillPersonFill } from 'react-icons/bs'
-// import { BsFillHouseDoorFill, BsFillPeopleFill, BsFillPersonFill } from 'react-icons/bs'
-// import { FaSearch } from 'react-icons/fa'
-// import { GrMail } from 'react-icons/gr'
-// import { IoMdListBox } from 'react-icons/io'
-// import { PiBookmarkSimpleFill } from 'react-icons/pi'
+import { RiNotification2Fill } from 'react-icons/ri'
 
-const SidebarItem = ({ onClick, Icon, label, username }) => {
+const SidebarItem = ({ onClick, Icon, label, username, notificationCount = 0 }) => {
 	const [hovered, setHovered] = useState(false)
+	const isActive = useRef(false)
 
 	const currentIcon = useRef(null)
+	const defIcon = useRef(Icon)
 
 	const path = window.location.pathname
 
+	const changeIcon = (condition, newIcon) => {
+		currentIcon.current = condition ? newIcon : defIcon.current
+		isActive.current = condition
+	}
+
 	if(!path.includes('status/')) {
-		if(label === 'Home' && path === '/') {
-			currentIcon.current = BsFillHouseDoorFill
-		}
-		else if(label === 'Profile' && path.split('/')[1] === username) {
-			currentIcon.current = BsFillPersonFill
+		switch(label) {
+			case 'Home':
+				changeIcon(path === '/', BsFillHouseDoorFill)
+
+				break
+			case 'Profile':
+				changeIcon(path.split('/')[1] === username, BsFillPersonFill)
+
+				break
+			case 'Notifications':
+				changeIcon(path.split('/')[1] === 'Notifications', RiNotification2Fill)
+				
+				break
+			default:
+				break
 		}
 	}
 
 	return (
 		<div onClick={onClick} onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)} className="mt-2 w-full cursor-pointer">
 			<div className={`${hovered ? 'bg-gray-200' : ''} transition-all rounded-full p-3 pr-6 flex items-center w-max`}>
-				{currentIcon.current ? <currentIcon.current size={26} /> : <Icon size={25} />}
-				<p className={`ml-4 ${currentIcon.current ? 'mt-1 text-[22px] font-bold' : 'text-xl'}`}>{label}</p>
+				{isActive.current ? <currentIcon.current size={26} /> : (
+					<div>
+						{notificationCount > 0 ? <div className="absolute bg-indigo-600 text-white text-[11px] rounded-full flex items-center justify-center w-[14px] h-[14px] mt-[-10px] ml-5">
+							<p className="mt-[1px] ml-[-1px]">{notificationCount}</p>
+						</div> : null}
+						<Icon size={25} />
+					</div>
+				)}
+				<p className={`ml-4 ${isActive.current ? 'mt-1 text-[22px] font-bold' : 'text-xl'}`}>{label}</p>
 			</div>
 		</div>
 	)

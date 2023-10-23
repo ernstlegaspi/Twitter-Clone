@@ -5,6 +5,7 @@ import { generateOtp, getCurrentUser, getPinnedTweet, getUserLikedTweets, likeTw
 import { addTweet, getTweets, getSingleTweet, getTweetsByUsername, addComment, getCommentsByTweetId, addNestedComment, getNestedComments, retweet, addTweetIdToUser, undoRetweet, deleteTweet } from '../controllers/tweet.js'
 
 import { verifyToken } from '../middleware/auth.js'
+import { addNotification, getNotificationByUser, getNotificationCount, updateNotificationCount } from '../controllers/notification.js'
 
 const router = express.Router()
 
@@ -39,6 +40,14 @@ router.post('/tweet/nestedComments', verifyToken, addNestedComment)
 
 router.put('/tweet/', verifyToken, likeTweet)
 router.put('/tweet/unlike', verifyToken, unlikeTweet)
+
+/* Notification Routes */
+router.get('/getNotificationCount/:userId', verifyToken, getNotificationCount)
+router.get('/getNotification/:userId', verifyToken, getNotificationByUser)
+
+router.post('/newNotification/:userId', verifyToken, addNotification)
+
+router.put('/updateNotificationCount/', verifyToken, updateNotificationCount)
 
 /* User Routes */
 router.get('/user/:id', verifyToken, getCurrentUser)

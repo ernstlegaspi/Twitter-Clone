@@ -1,9 +1,7 @@
-import { AiOutlineMail, AiOutlineSchedule, AiOutlineSearch } from 'react-icons/ai'
+import { AiOutlineSchedule } from 'react-icons/ai'
 import { BiPoll } from 'react-icons/bi'
-import { BsBookmark, BsCardImage, BsEmojiSmile, BsFiletypeGif, BsHouseDoor, BsPeople, BsPerson } from 'react-icons/bs'
-import { GrNotification } from 'react-icons/gr'
+import { BsCardImage, BsEmojiSmile, BsFiletypeGif } from 'react-icons/bs'
 import { IoLocationOutline } from 'react-icons/io5'
-import { RiFileList2Line } from 'react-icons/ri'
 
 export const footerNavigationText = [
 	"About",
@@ -83,41 +81,6 @@ export const years = [
 	"1979", "1978", "1977", "1976", "1975", "1974", "1973", "1972", "1971", "1970",
 	"1969", "1968", "1967", "1966", "1965", "1964", "1963", "1962", "1961", "1960",
 	"1959", "1958", "1957", "1956", "1955", "1954", "1953", "1952", "1951", "1950"
-]
-
-export const sidebarItems = [
-	{
-		icon: BsHouseDoor,
-		label: 'Home'
-	},
-	{
-		icon: AiOutlineSearch,
-		label: 'Explore'
-	},
-	{
-		icon: GrNotification,
-		label: 'Notifications'
-	},
-	{
-		icon: AiOutlineMail,
-		label: 'Messages'
-	},
-	{
-		icon: RiFileList2Line,
-		label: 'Lists'
-	},
-	{
-		icon: BsBookmark,
-		label: 'Bookmarks'
-	},
-	{
-		icon: BsPeople,
-		label: 'Communities'
-	},
-	{
-		icon: BsPerson,
-		label: 'Profile'
-	}
 ]
 
 export const postFormBottomIcon = [

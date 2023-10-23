@@ -57,6 +57,14 @@ const userSchema = new mongoose.Schema({
 	pinnedTweet: {
 		type: mongoose.Schema.ObjectId,
 		ref: 'Tweet'
+	},
+	notifications: [{
+		type: mongoose.Schema.ObjectId,
+		ref: 'Notification'
+	}],
+	notificationCount: {
+		type: Number,
+		default: 0
 	}
 }, { timestamps: true })
 

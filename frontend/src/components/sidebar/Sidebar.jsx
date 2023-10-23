@@ -1,18 +1,34 @@
-import React, { useTransition } from 'react'
+import React, { useEffect, useTransition } from 'react'
 
-import { BsThreeDots } from 'react-icons/bs'
+import { BsBookmark, BsHouseDoor, BsPeople, BsPerson, BsThreeDots } from 'react-icons/bs'
+import { AiOutlineMail, AiOutlineSearch } from 'react-icons/ai'
+import { RiFileList2Line, RiNotification2Line } from 'react-icons/ri'
 import { Link, useNavigate } from 'react-router-dom'
 import { LazyLoadImage } from 'react-lazy-load-image-component'
 
 import 'react-lazy-load-image-component/src/effects/blur.css'
 import SidebarItem from './sidebarItem'
-import { sidebarItems } from '../../constants'
+import { getNotificationCount, updateNotificationCount } from '../../api/api'
+import { useDispatch, useSelector } from 'react-redux'
+import { setNotificationCount } from '../../slices/notifications/notificationSlice'
 
 const Sidebar = ({ showLogoutModal, showPostForm, user }) => {
 	// eslint-disable-next-line
 	const [_, startTransition] = useTransition()
 	const navigate = useNavigate()
+	const notificationCount = useSelector(state => state.notification.notificationCount)
+	const dispatch = useDispatch()
 
+	useEffect(() => {
+		const notificationCountGet = async () => {
+			const { data } = await getNotificationCount(user?._id)
+
+			dispatch(setNotificationCount(data.result))
+		}
+		
+		notificationCountGet()
+	}, [dispatch, user?._id])
+	
 	const handleClickCondition = label => {
 		switch(label) {
 			case 'Home':
@@ -42,6 +58,24 @@ const Sidebar = ({ showLogoutModal, showPostForm, user }) => {
 		}
 	}
 
+	const ListItems = () => (
+		<>
+			<SidebarItem onClick={() => handleClickCondition('Home')} Icon={BsHouseDoor} label='Home' />
+			<SidebarItem onClick={() => handleClickCondition('Explore')} Icon={AiOutlineSearch} label='Explore' />
+			<SidebarItem onClick={async () => {
+				dispatch(setNotificationCount(0))
+				handleClickCondition('Notifications')
+
+				await updateNotificationCount({ userId: user._id })
+			}} Icon={RiNotification2Line} label='Notifications' notificationCount={notificationCount} />
+			<SidebarItem onClick={() => handleClickCondition('Messages')} Icon={AiOutlineMail} label='Messages' />
+			<SidebarItem onClick={() => handleClickCondition('Lists')} Icon={RiFileList2Line} label='Lists' />
+			<SidebarItem onClick={() => handleClickCondition('Bookmarks')} Icon={BsBookmark} label='Bookmarks' />
+			<SidebarItem onClick={() => handleClickCondition('Communities')} Icon={BsPeople} label='Communities'  />
+			<SidebarItem onClick={() => handleClickCondition('Profile')} Icon={BsPerson} label='Profile' username={user.username} />
+		</>
+	)
+
 	return (
 		<div className="w-[30.8%] flex justify-end relative">
 			<div className="w-[265px] mt-[2px] relative">
@@ -52,11 +86,7 @@ const Sidebar = ({ showLogoutModal, showPostForm, user }) => {
 						</div>
 					</Link>
 				</div>
-				{sidebarItems.map((item, index) => {
-					return(
-						<SidebarItem onClick={() => handleClickCondition(item.label)} key={index} Icon={item.icon} label={item.label} username={user.username} />
-					)
-				})}
+				<ListItems />
 				<button onClick={() => startTransition(() => showPostForm(true))} className="mt-7 font-bold text-white rounded-full purple-button hover:bg-indigo-600 transition-all w-[85%] py-[10px] text-lg">Post</button>
 				<div onClick={() => showLogoutModal(true)} className="cursor-pointer transition-all hover:bg-gray-200 w-[95%] flex items-center rounded-full p-3 absolute bottom-5">
 					<p className="bg-indigo-600 rounded-full text-white py-[6px] px-[15px] w-max h-max text-xl mr-3">{user.name.charAt(0)}</p>

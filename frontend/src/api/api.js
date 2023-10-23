@@ -1,6 +1,5 @@
 import axios from 'axios'
 
-// const API = axios.create({ baseURL: 'http://192.168.1.4:3001/' })
 const API = axios.create({ baseURL: 'http://localhost:3001/' })
 
 API.interceptors.request.use(req => {
@@ -10,7 +9,6 @@ API.interceptors.request.use(req => {
 })
 
 export const deleteTweet = data => API.post('deleteTweet/', data)
-
 export const pinnedTweet = data => API.put('pinnedTweet/', data)
 export const removePinnedTweet = data => API.put('pinnedTweetRemove/', data)
 export const getPinnedTweet = tweetId => API.get(`pinnedTweet/${tweetId}`)
@@ -29,6 +27,11 @@ export const likeTweet = data => API.put('tweet/', data)
 export const unlikeTweet = data => API.put('tweet/unlike', data)
 export const getAllTweets = () => API.get('tweet/')
 export const getSingleTweet = id => API.get(`tweet/singleTweet/${id}`)
+
+export const addNotification = (userId, data) => API.post(`newNotification/${userId}`, data)
+export const getNotificationCount = userId => API.get(`getNotificationCount/${userId}`)
+export const updateNotificationCount = userId => API.put('updateNotificationCount/', userId)
+export const getNotifications = id => API.get(`getNotification/${id}`)
 
 export const getCurrentUser = id => API.get(`user/${id}`)
 export const getUserLikedTweets = username => API.get(`user/likedTweets/${username}`)

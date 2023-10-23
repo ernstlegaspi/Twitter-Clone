@@ -9,7 +9,7 @@ import { FaRegComment } from 'react-icons/fa'
 
 import { useNavigate, useParams } from 'react-router-dom'
 
-import { deleteTweet, likeTweet, pinnedTweet, removePinnedTweet, unlikeTweet } from '../../api/api'
+import { addNotification, deleteTweet, likeTweet, pinnedTweet, removePinnedTweet, unlikeTweet } from '../../api/api'
 import { PulseLoader } from 'react-spinners'
 import RetweetCard from './RetweetCard'
 import { setPinnedTweet } from '../../slices/tweet/tweetSlice'
@@ -18,7 +18,7 @@ import toast from 'react-hot-toast'
 
 const CommentModal = lazy(() => import('../modals/commentModal'))
 
-const TweetCard = ({ tweet, user, isComment = false, isPinnedTweet = false, setTweetCount }) => {
+const TweetCard = ({ tweet, user, isComment = false, isPinnedTweet = false, isNotification = false, setTweetCount }) => {
 	// eslint-disable-next-line
 	const [_, startTransition] = useTransition()
 	const buttonsHovered = useRef(false)
@@ -90,6 +90,18 @@ const TweetCard = ({ tweet, user, isComment = false, isPinnedTweet = false, setT
 		currentHeartIcon.current = AiFillHeart
 		currentLikeCount.current = data.result.likedUserId.length
 		setIsLiked(true)
+
+		if(tweet.userId === user._id) return
+
+		await addNotification(tweet.userId, 
+			{
+				message: tweet._id !== '' ? 'liked your reply' : 'liked your tweet',
+				notificationType: 'Like',
+				body: tweet.body,
+				name: user.name,
+				username: user.username
+			}
+		)
 	}
 
 	const handlePinnedTweet = async () => {
@@ -196,7 +208,7 @@ const TweetCard = ({ tweet, user, isComment = false, isPinnedTweet = false, setT
 									{dropdownItem(() => {
 										setShowDropdown(false)
 										setDeleteClicked(true)
-										setTweetCount(prev => prev - 1)
+										if(id && !isComment) setTweetCount(prev => prev - 1)
 										handleDeleteTweet()
 									}, BsTrash, 'Delete', 'text-red-500')}
 									{dropdownItem(() => {
@@ -208,6 +220,7 @@ const TweetCard = ({ tweet, user, isComment = false, isPinnedTweet = false, setT
 						</div>
 						{id && !isComment ? null : (
 							<>
+								{isNotification ? <p className="text-[15px] text-gray-500">Replying to <span onClick={() => {}} className="text-indigo-600 hover:underline cursor-pointer">@coding_ernst</span></p> : null}
 								<p className="leading-5 text-slate-600">{tweet.body}</p>
 								<div className="w-[90%] flex justify-between mt-3 mb-2">
 									{Buttons(() => startTransition(() => setShowCommentModal(true)), 'bg-sky-500/10', 'text-sky-500', FaRegComment, false, currentCommentCount < 1 ? '' : currentCommentCount)}
