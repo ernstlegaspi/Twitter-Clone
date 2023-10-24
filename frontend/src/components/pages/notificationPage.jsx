@@ -11,7 +11,6 @@ const NotificationPage = ({ user }) => {
 	const loading = useRef(true)
 	const notifications = useSelector(state => state.notification.notification)
 	const dispatch = useDispatch()
-	console.log(notifications)
 	
 	useEffect(() => {
 		const getNotifs = async () => {
@@ -48,7 +47,7 @@ const NotificationPage = ({ user }) => {
 				<PulseLoader color="#0EA5E9" />
 			</div> : (
 				<>
-					{notifications.map(notification => notification.notificationType === 'Comment' ? <TweetCard tweet={notification} user={user} /> :  <NotificationCard key={notification._id} notification={notification} />)}
+					{notifications.map(notification => notification.notificationType === 'Comment' ? <TweetCard isNotification={true} tweet={notification.tweetId} user={user} /> :  <NotificationCard key={notification._id} notification={notification} />)}
 				</>
 			)}
 		</div>

@@ -8,6 +8,10 @@ API.interceptors.request.use(req => {
 	return req
 })
 
+export const addBookmark = data => API.put('addBookmark/', data)
+export const getBookmarks = userId => API.get(`getBookmarks/${userId}`)
+export const removeBookmark = data => API.put('removeBookmark/', data)
+
 export const deleteTweet = data => API.post('deleteTweet/', data)
 export const pinnedTweet = data => API.put('pinnedTweet/', data)
 export const removePinnedTweet = data => API.put('pinnedTweetRemove/', data)

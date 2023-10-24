@@ -3,6 +3,7 @@ import { createSlice } from '@reduxjs/toolkit'
 const tweet = createSlice({
 	name: 'Tweet',
 	initialState: {
+		bookmarks: undefined,
 		comments: undefined,
 		nestedComments: undefined,
 		pinnedTweet: undefined,
@@ -11,6 +12,9 @@ const tweet = createSlice({
 		postForm: false
 	},
 	reducers: {
+		setBookmark: (state, action) => {
+			state.bookmarks = action.payload
+		},
 		setComment: (state, action) => {
 			state.comments = action.payload
 		},
@@ -29,6 +33,6 @@ const tweet = createSlice({
 	}
 })
 
-export const { setComment, setNestedComments, setPinnedTweet, setTweet, setTweets } = tweet.actions
+export const { setBookmark, setComment, setNestedComments, setPinnedTweet, setTweet, setTweets } = tweet.actions
 
 export default tweet.reducer

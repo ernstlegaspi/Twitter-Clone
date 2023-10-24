@@ -58,8 +58,16 @@ export const getNotificationByUser = async (req, res) => {
 		const { userId } = req.params
 
 		const userNotifications = await User.findById({ _id: userId })
-		.populate('notifications')
+		.populate({
+			path: 'notifications',
+			populate: {
+				path: 'tweetId',
+				model: 'Tweet'
+			}
+		})
 		.exec()
+
+		console.log(userNotifications)
 
 		success(res, userNotifications, 'Notifications Retrieved')
 	}

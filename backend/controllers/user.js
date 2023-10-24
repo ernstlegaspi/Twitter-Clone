@@ -135,6 +135,67 @@ export const getPinnedTweet = async (req, res) => {
 	}
 }
 
+export const getBookmarks = async (req, res) => {
+	try {
+		const { userId } = req.params
+
+		const bookmarks = await User.findById({ _id: userId })
+		.populate('bookmark')
+		.exec()
+
+		console.log(bookmarks)
+
+		success(res, bookmarks, 'Bookmarks retrieved')
+	}
+	catch(error) {
+		serverError(res)
+	}
+}
+
+export const addBookmark = async (req, res) => {
+	try {
+		const { userId, tweetId } = req.body
+
+		if(!userId || !tweetId) return clientError(res, 'Invalid Credentials')
+
+		await User.findByIdAndUpdate(userId,
+			{ $push: { bookmark: tweetId } },
+			{ new: true }
+		)
+
+		await Tweet.findByIdAndUpdate(tweetId,
+			{ $inc: { bookmarkCount: 1 } },
+			{ new: true }
+		)
+
+		success(res, {}, 'Tweet added to bookmark')
+	}
+	catch(error) {
+		serverError(res)
+	}
+}
+
+export const removeBookmark = async (req, res) => {
+	try {
+		const { userId, tweetId } = req.body
+
+		await User.findByIdAndUpdate(userId,
+			{ $pull: { bookmark: tweetId } },
+			{ new: true }
+		)
+
+		await Tweet.findByIdAndUpdate(tweetId,
+			{ $inc: { bookmarkCount: -1 } },
+			{ new: true }
+		)
+
+		success(res, {}, 'Tweet removed to bookmark')
+	}
+	catch(error) {
+		serverError(res)
+	}
+}
+
 // OTP
 export const generateOtp = (req, res) => {
 	const newOtp = otp.generate(6, { lowerCaseAlphabets: false, upperCaseAlphabets: false, specialChars: false })

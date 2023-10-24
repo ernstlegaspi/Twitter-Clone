@@ -65,7 +65,11 @@ const userSchema = new mongoose.Schema({
 	notificationCount: {
 		type: Number,
 		default: 0
-	}
+	},
+	bookmark: [{
+		type: mongoose.Schema.ObjectId,
+		ref: 'Tweet'
+	}]
 }, { timestamps: true })
 
 export default mongoose.model('User', userSchema)

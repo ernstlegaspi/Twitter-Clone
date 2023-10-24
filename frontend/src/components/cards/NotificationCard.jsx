@@ -1,7 +1,6 @@
 import React from 'react'
 
 import { AiFillHeart } from 'react-icons/ai'
-import TweetCard from './tweetCard'
 
 const NotificationCard = ({ notification }) => {
 	return (

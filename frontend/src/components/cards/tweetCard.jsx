@@ -4,12 +4,12 @@ import moment from 'moment'
 
 import { AiFillHeart, AiOutlineHeart, AiOutlineRetweet } from 'react-icons/ai'
 import { BiDotsHorizontalRounded } from 'react-icons/bi'
-import { BsBookmark, BsPin, BsPinFill, BsTrash } from 'react-icons/bs'
+import { BsBookmark, BsFillBookmarkFill, BsPin, BsPinFill, BsTrash } from 'react-icons/bs'
 import { FaRegComment } from 'react-icons/fa'
 
 import { useNavigate, useParams } from 'react-router-dom'
 
-import { addNotification, deleteTweet, likeTweet, pinnedTweet, removePinnedTweet, unlikeTweet } from '../../api/api'
+import { addBookmark, addNotification, deleteTweet, getBookmarks, likeTweet, pinnedTweet, removeBookmark, removePinnedTweet, unlikeTweet } from '../../api/api'
 import { PulseLoader } from 'react-spinners'
 import RetweetCard from './RetweetCard'
 import { setPinnedTweet } from '../../slices/tweet/tweetSlice'
@@ -28,8 +28,10 @@ const TweetCard = ({ tweet, user, isComment = false, isPinnedTweet = false, isNo
 	const [deleteClicked, setDeleteClicked] = useState(false)
 	const hasPinnedTweet = useRef(false)
 	const hasUserRetweeted = useRef(false)
+	const hasBookmark = useRef(false)
 	const [retweetClick, setRetweetClicked] = useState()
 	const currentHeartIcon = useRef(AiOutlineHeart)
+	const currentBookmarkIcon = useRef(BsBookmark)
 	const [currentCommentCount, setCurrentCommentCount] = useState(tweet.commentsCount)
 	const currentLikeCount = useRef(0)
 	const { id, username } = useParams()
@@ -143,6 +145,37 @@ const TweetCard = ({ tweet, user, isComment = false, isPinnedTweet = false, isNo
 		}
 	}
 
+	const handleBookmark = async () => {
+		if(!hasBookmark.current) {
+			try {
+				hasBookmark.current = true
+
+				await addBookmark({ tweetId: tweet._id, userId: user._id })
+
+				toast.success('Tweet bookmarked')
+			}
+			catch(error) {
+				toast.error('Can not bookmark tweet')
+				hasBookmark.current = false
+				currentBookmarkIcon.current = BsBookmark
+			}
+			
+			return
+		}
+
+		try {
+			hasBookmark.current = false
+
+			await removeBookmark({ tweetId: tweet._id, userId: user._id })
+
+			toast.success('Tweet remove from bookmark')
+		}
+		catch(error) {
+			hasBookmark.current = true
+			toast.success('Can not remove tweet from bookmark')
+		}
+	}
+
 	useEffect(() => {
 		if(!user) return
 
@@ -220,13 +253,16 @@ const TweetCard = ({ tweet, user, isComment = false, isPinnedTweet = false, isNo
 						</div>
 						{id && !isComment ? null : (
 							<>
-								{isNotification ? <p className="text-[15px] text-gray-500">Replying to <span onClick={() => {}} className="text-indigo-600 hover:underline cursor-pointer">@coding_ernst</span></p> : null}
+								{isNotification ? <p className="text-[15px] text-gray-500">Replying to <span onClick={() => {}} className="text-indigo-600 hover:underline cursor-pointer">{user.username}</span></p> : null}
 								<p className="leading-5 text-slate-600">{tweet.body}</p>
 								<div className="w-[90%] flex justify-between mt-3 mb-2">
 									{Buttons(() => startTransition(() => setShowCommentModal(true)), 'bg-sky-500/10', 'text-sky-500', FaRegComment, false, currentCommentCount < 1 ? '' : currentCommentCount)}
 									{Buttons(() => setRetweetClicked(prev => !prev), 'bg-green-400/10', 'text-green-400', AiOutlineRetweet, hasUserRetweeted.current, tweet.retweetUserId.length < 1 ? '' : tweet.retweetUserId.length, tweet.userId !== user._id)}
 									{Buttons(handleHeartButton, 'bg-pink-500/10', 'text-pink-500', currentHeartIcon.current, isLiked, currentLikeCount.current < 1 ? '' : currentLikeCount.current)}
-									{Buttons(() => {}, 'bg-yellow-400/10', 'text-yellow-400', BsBookmark, false, '')}
+									{Buttons(() => {
+										currentBookmarkIcon.current = currentBookmarkIcon.current === BsBookmark ? BsFillBookmarkFill : BsBookmark
+										handleBookmark()
+									}, 'bg-yellow-400/10', 'text-yellow-400', currentBookmarkIcon.current, currentBookmarkIcon.current === BsFillBookmarkFill, '')}
 								</div>
 							</>
 						)}
@@ -242,7 +278,7 @@ const TweetCard = ({ tweet, user, isComment = false, isPinnedTweet = false, isNo
 							{Buttons(() => startTransition(() => setShowCommentModal(true)), 'bg-sky-500/10', 'text-sky-500', FaRegComment, false, currentCommentCount < 1 ? '' : currentCommentCount)}
 							{Buttons(() => {}, 'bg-green-400/10', 'text-green-400', AiOutlineRetweet, hasUserRetweeted.current, tweet.retweetUserId.length < 1 ? '' : tweet.retweetUserId.length, tweet.userId !== user._id)}
 							{Buttons(handleHeartButton, 'bg-pink-500/10', 'text-pink-500', currentHeartIcon.current, isLiked, currentLikeCount.current < 1 ? '' : currentLikeCount.current)}
-							{Buttons(() => {}, 'bg-yellow-400/10', 'text-yellow-400', BsBookmark, false, '')}
+							{Buttons(handleBookmark, 'bg-yellow-400/10', 'text-yellow-400', BsBookmark, false, '')}
 						</div>
 					</div>
 				) : null}

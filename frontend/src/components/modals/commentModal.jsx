@@ -5,7 +5,7 @@ import { AiOutlineClose } from 'react-icons/ai'
 import { useDispatch } from 'react-redux'
 
 import { postFormBottomIcon } from '../../constants'
-import { addComment, addNestedComment, addTweetIdToUser, getAllTweets, getCommentsByTweetId } from '../../api/api'
+import { addComment, addNestedComment, addNotification, addTweetIdToUser, getAllTweets, getCommentsByTweetId } from '../../api/api'
 import { setComment, setTweets } from '../../slices/tweet/tweetSlice'
 import { toast } from 'react-hot-toast'
 import { useParams } from 'react-router-dom'
@@ -33,11 +33,16 @@ const CommentModal = ({ currentCommentCount, user, tweet, showCommentModal }) =>
 		toast.success('Your comment was sent.')
 		currentCommentCount(data.result.newCommentCount.commentsCount)
 
-		console.log(data.result.newTweetComment._id)
-		console.log(user._id)
-
-		const r = await addTweetIdToUser({ id: data.result.newTweetComment._id, userId: user._id })
-		console.log(r.data.result)
+		await addTweetIdToUser({ id: data.result.newTweetComment._id, userId: user._id })
+		
+		if(tweet.userId !== user._id) {
+			await addNotification(tweet.userId,
+				{
+					tweetId: data.result.newTweetComment._id,
+					notificationType: 'Comment'
+				}
+			)
+		}
 		
 		if(tweet.tweetId && tweet._id !== id) {
 			await addNestedComment({ id: tweet._id, nestedCommentId: data.result.newTweetComment._id })
@@ -54,6 +59,7 @@ const CommentModal = ({ currentCommentCount, user, tweet, showCommentModal }) =>
 		}
 		
 		const res = await getCommentsByTweetId(tweet._id)
+
 		dispatch(setComment(res.data.result))
 	}
 

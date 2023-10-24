@@ -1,7 +1,7 @@
 import express from 'express'
 
 import { login, register } from '../controllers/auth.js'
-import { generateOtp, getCurrentUser, getPinnedTweet, getUserLikedTweets, likeTweet, updatePinnedTweet, unlikeTweet, removePinnedTweet } from '../controllers/user.js'
+import { generateOtp, getCurrentUser, getPinnedTweet, getUserLikedTweets, likeTweet, updatePinnedTweet, unlikeTweet, removePinnedTweet, addBookmark, removeBookmark, getBookmarks } from '../controllers/user.js'
 import { addTweet, getTweets, getSingleTweet, getTweetsByUsername, addComment, getCommentsByTweetId, addNestedComment, getNestedComments, retweet, addTweetIdToUser, undoRetweet, deleteTweet } from '../controllers/tweet.js'
 
 import { verifyToken } from '../middleware/auth.js'
@@ -17,6 +17,10 @@ router.post('/auth/login', login)
 router.post('/generateOtp/', generateOtp)
 
 /* Tweet Routes */
+router.get('/getBookmarks/:userId', verifyToken, getBookmarks)
+router.put('/addBookmark/', verifyToken, addBookmark)
+router.put('/removeBookmark/', verifyToken, removeBookmark)
+
 router.post('/deleteTweet/', verifyToken, deleteTweet)
 
 router.put('/pinnedTweet/', verifyToken, updatePinnedTweet)
