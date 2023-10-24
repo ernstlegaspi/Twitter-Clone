@@ -38,7 +38,7 @@ const Sidebar = ({ showLogoutModal, showPostForm, user }) => {
 				navigate('/Explore')
 				break
 			case 'Notifications':
-				navigate('/Notifications')
+				navigate('/notifications')
 				break
 			case 'Messages':
 				navigate('/Messages')
@@ -47,7 +47,7 @@ const Sidebar = ({ showLogoutModal, showPostForm, user }) => {
 				navigate('/Lists')
 				break
 			case 'Bookmarks':
-				navigate('/Bookmarks')
+				navigate('/bookmarks')
 				break
 			case 'Communities':
 				navigate('/Communities')

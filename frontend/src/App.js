@@ -16,6 +16,7 @@ const LogoutModal = lazy(() => import('./components/modals/logoutModal'))
 const PostFormModal = lazy(() => import('./components/modals/postFormModal'))
 
 // Pages
+const BookmarkPage  = lazy(() => import('./components/pages/bookmarkPage'))
 const NotificationPage = lazy(() => import('./components/pages/notificationPage'))
 const ProfilePage = lazy(() => import('./components/pages/profilePage'))
 const TweetPage = lazy(() => import('./components/pages/tweetPage'))
@@ -75,6 +76,7 @@ const App = () => {
 					<Routes>
 						<Route path='/' element={<Home user={user} />} />
 						<Route path='/notifications' element={<NotificationPage user={user} />} />
+						<Route path='/bookmarks' element={<BookmarkPage user={user} />} />
 						<Route path='/:username' element={<ProfilePage user={user} />} />
 						<Route path='/:username/status/:id' element={<TweetPage user={user} />} />
 					</Routes>

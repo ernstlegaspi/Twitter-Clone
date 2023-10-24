@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react'
 
-import { BsFillHouseDoorFill, BsFillPersonFill } from 'react-icons/bs'
+import { BsFillBookmarkFill, BsFillHouseDoorFill, BsFillPersonFill } from 'react-icons/bs'
 import { RiNotification2Fill } from 'react-icons/ri'
 
 const SidebarItem = ({ onClick, Icon, label, username, notificationCount = 0 }) => {
@@ -28,7 +28,11 @@ const SidebarItem = ({ onClick, Icon, label, username, notificationCount = 0 }) 
 
 				break
 			case 'Notifications':
-				changeIcon(path.split('/')[1] === 'Notifications', RiNotification2Fill)
+				changeIcon(path.split('/')[1] === 'notifications', RiNotification2Fill)
+				
+				break
+			case 'Bookmarks':
+				changeIcon(path.split('/')[1] === 'bookmarks', BsFillBookmarkFill)
 				
 				break
 			default:

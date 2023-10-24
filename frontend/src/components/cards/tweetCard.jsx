@@ -9,7 +9,7 @@ import { FaRegComment } from 'react-icons/fa'
 
 import { useNavigate, useParams } from 'react-router-dom'
 
-import { addBookmark, addNotification, deleteTweet, getBookmarks, likeTweet, pinnedTweet, removeBookmark, removePinnedTweet, unlikeTweet } from '../../api/api'
+import { addBookmark, addNotification, deleteTweet, likeTweet, pinnedTweet, removeBookmark, removePinnedTweet, unlikeTweet } from '../../api/api'
 import { PulseLoader } from 'react-spinners'
 import RetweetCard from './RetweetCard'
 import { setPinnedTweet } from '../../slices/tweet/tweetSlice'
@@ -34,6 +34,7 @@ const TweetCard = ({ tweet, user, isComment = false, isPinnedTweet = false, isNo
 	const currentBookmarkIcon = useRef(BsBookmark)
 	const [currentCommentCount, setCurrentCommentCount] = useState(tweet.commentsCount)
 	const currentLikeCount = useRef(0)
+	const currentBookmarkCount = useRef(0)
 	const { id, username } = useParams()
 	const navigate = useNavigate()
 	const dispatch = useDispatch()
@@ -179,6 +180,15 @@ const TweetCard = ({ tweet, user, isComment = false, isPinnedTweet = false, isNo
 	useEffect(() => {
 		if(!user) return
 
+		const userBookmarked = user.bookmark.filter(bookmark => tweet._id === bookmark)
+		
+		currentBookmarkCount.current = tweet?.bookmarkCount
+		
+		if(userBookmarked[0]) {
+			currentBookmarkIcon.current = BsFillBookmarkFill
+			hasBookmark.current = true
+		}
+
 		tweet.retweetUserId.map(retweetId => {
 			if(retweetId === user._id) {
 				hasUserRetweeted.current = true
@@ -204,11 +214,11 @@ const TweetCard = ({ tweet, user, isComment = false, isPinnedTweet = false, isNo
 		}
 
 		currentLikeCount.current = tweet.likedUserId.length
-	}, [user, tweet?.likedUserId, tweet?.retweetUserId, tweet?.commentsCount, tweet?._id, user?._id])
+	}, [user, tweet?.likedUserId, tweet?.bookmarkCount, tweet?.retweetUserId, tweet?.commentsCount, tweet?._id, user?._id])
 
 	return (
 		<>
-			<div id="tweet-card" onClick={() => showDropdown || (id && !isComment) || (username && !isComment && buttonsHovered.current) || (isComment && buttonsHovered.current) || (window.location.pathname === '/' && buttonsHovered.current) ? null : navigate(`/${tweet.username}/status/${tweet.uniqueId}`)} className={`${tweet.nestedComments.length < 1 || (tweet.nestedComments.length > 0  && window.location.pathname === '/') ? 'border-b' : ''} border-color ${(id && !isComment) || dropdownItemsHovered ? '' : 'hover:bg-gray-100/50'} ${id && !isComment ? '' : 'cursor-pointer'} ${deleteClicked ? 'hidden' : ''} w-full transition-all pt-2`}>
+			<div id="tweet-card" onClick={() => (buttonsHovered.current && window.location.pathname === '/bookmarks') || showDropdown || (id && !isComment) || (username && !isComment && buttonsHovered.current) || (isComment && buttonsHovered.current) || (window.location.pathname === '/' && buttonsHovered.current) ? null : navigate(`/${tweet.username}/status/${tweet.uniqueId}`)} className={`${tweet.nestedComments.length < 1 || (tweet.nestedComments.length > 0  && window.location.pathname === '/') ? 'border-b' : ''} border-color ${(id && !isComment) || dropdownItemsHovered ? '' : 'hover:bg-gray-100/50'} ${id && !isComment ? '' : 'cursor-pointer'} ${deleteClicked ? 'hidden' : ''} w-full transition-all pt-2`}>
 				<div className="flex w-full">
 					<div>
 						{hasUserRetweeted.current || tweet._id === user.pinnedTweet || hasPinnedTweet.current || isPinnedTweet ? <div className="flex justify-end w-full text-gray-500 pr-2 pt-[3px]">
@@ -260,9 +270,10 @@ const TweetCard = ({ tweet, user, isComment = false, isPinnedTweet = false, isNo
 									{Buttons(() => setRetweetClicked(prev => !prev), 'bg-green-400/10', 'text-green-400', AiOutlineRetweet, hasUserRetweeted.current, tweet.retweetUserId.length < 1 ? '' : tweet.retweetUserId.length, tweet.userId !== user._id)}
 									{Buttons(handleHeartButton, 'bg-pink-500/10', 'text-pink-500', currentHeartIcon.current, isLiked, currentLikeCount.current < 1 ? '' : currentLikeCount.current)}
 									{Buttons(() => {
+										currentBookmarkCount.current = currentBookmarkIcon.current === BsBookmark ? currentBookmarkCount.current + 1 : currentBookmarkCount.current - 1
 										currentBookmarkIcon.current = currentBookmarkIcon.current === BsBookmark ? BsFillBookmarkFill : BsBookmark
 										handleBookmark()
-									}, 'bg-yellow-400/10', 'text-yellow-400', currentBookmarkIcon.current, currentBookmarkIcon.current === BsFillBookmarkFill, '')}
+									}, 'bg-yellow-400/10', 'text-yellow-400', currentBookmarkIcon.current, currentBookmarkIcon.current === BsFillBookmarkFill, currentBookmarkCount.current < 1 ? '' : currentBookmarkCount.current)}
 								</div>
 							</>
 						)}
