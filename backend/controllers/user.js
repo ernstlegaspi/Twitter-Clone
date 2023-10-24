@@ -207,10 +207,12 @@ export const followUser = async (req, res) => {
 			{ new: true }
 		)
 
-		await User.findByIdAndUpdate(otherUserId,
+		const a = await User.findByIdAndUpdate(otherUserId,
 			{ $push: { followers: userId} },
 			{ new: true }
 		)
+
+		console.log(a)
 
 		success(res, {}, 'Followed User')
 	}

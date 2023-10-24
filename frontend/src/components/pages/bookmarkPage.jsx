@@ -32,7 +32,7 @@ const BookmarkPage = ({ user }) => {
 	return (
 		<div className="h-full feed-scroll w-[600px] border border-y-0 border-color relative">
 			<Header />
-			{bookmarks.length < 1 ? <p className="m-2 homepage-text-color">No bookmarks</p> : !bookmarks ? <div className="mt-[60%] w-full flex items-center justify-center">
+			{!bookmarks || bookmarks.length < 1 ? <p className="m-2 homepage-text-color">No bookmarks</p> : !bookmarks ? <div className="mt-[60%] w-full flex items-center justify-center">
 				<PulseLoader color="#0EA5E9" />
 			</div> : (
 				<>

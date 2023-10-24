@@ -9,13 +9,15 @@ export const addNotification = async (req, res) => {
 		
 		const newNotification = await new Notification({ ...req.body }).save()
 
-		await User.findByIdAndUpdate(userId,
+		const n = await User.findByIdAndUpdate(userId,
 			{
 				$push: { notifications: newNotification._id },
 				$inc: { notificationCount: 1 }
 			},
 			{ new: true }
 		)
+
+		console.log(n)
 
 		success(res, {}, 'Notification created', 201)
 	}
@@ -66,8 +68,6 @@ export const getNotificationByUser = async (req, res) => {
 			}
 		})
 		.exec()
-
-		console.log(userNotifications)
 
 		success(res, userNotifications, 'Notifications Retrieved')
 	}

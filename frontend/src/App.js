@@ -17,6 +17,7 @@ const PostFormModal = lazy(() => import('./components/modals/postFormModal'))
 
 // Pages
 const BookmarkPage  = lazy(() => import('./components/pages/bookmarkPage'))
+const FollowersPage = lazy(() => import('./components/pages/followersPage'))
 const NotificationPage = lazy(() => import('./components/pages/notificationPage'))
 const ProfilePage = lazy(() => import('./components/pages/profilePage'))
 const TweetPage = lazy(() => import('./components/pages/tweetPage'))
@@ -86,6 +87,7 @@ const App = () => {
 						<Route path='/bookmarks' element={<BookmarkPage user={user} />} />
 						<Route path='/:username' element={<ProfilePage />} />
 						<Route path='/:username/status/:id' element={<TweetPage user={user} />} />
+						<Route path='/:username/followers' element={<FollowersPage user={user} />} />
 					</Routes>
 					{user ? <Trends /> : null}
 				</Suspense>

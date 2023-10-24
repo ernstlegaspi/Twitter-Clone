@@ -11,11 +11,14 @@ const NotificationPage = ({ user }) => {
 	const loading = useRef(true)
 	const notifications = useSelector(state => state.notification.notification)
 	const dispatch = useDispatch()
+	console.log(notifications)
 	
 	useEffect(() => {
 		const getNotifs = async () => {
 			const { data } = await getNotifications(user._id)
 
+			console.log(data.result)
+			
 			dispatch(setNotifications(data.result.notifications.reverse()))
 		}
 

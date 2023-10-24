@@ -7,7 +7,7 @@ import { AiOutlineCalendar } from 'react-icons/ai'
 import { FiArrowLeft } from 'react-icons/fi'
 import { PulseLoader } from 'react-spinners'
 
-import { followUser, getFollowing, getPinnedTweet, getTweetsByUsername, getUserByUsername, getUserLikedTweets, unfollowUser } from '../../api/api'
+import { addNotification, followUser, getFollowing, getPinnedTweet, getTweetsByUsername, getUserByUsername, getUserLikedTweets, unfollowUser } from '../../api/api'
 import { setPinnedTweet, setTweets } from '../../slices/tweet/tweetSlice'
 import TweetCard from '../cards/tweetCard'
 
@@ -18,7 +18,7 @@ const ProfilePage = () => {
 	const [mediaTab, setMediaTab] = useState(false)
 	const [likesTab, setLikesTab] = useState(false)
 	const [loading, setLoading] = useState(false)
-	const [isFollowing, setIsFollowing] = useState(false)
+	const isFollowing = useRef(false)
 	const [hasFollowed, setHasFollowed] = useState(false)
 	const [pinnedTweetLoading, setPinnedTweetLoading] = useState(false)
 	const [followingHover, setFollowingHover] = useState(false)
@@ -106,13 +106,21 @@ const ProfilePage = () => {
 	}
 
 	const handleProfileClick = async () => {
-		if(!isFollowing && !hasFollowed) {
+		if(isFollowing.current && !hasFollowed) {
 			try {
 				await followUser({ userId: currentUser?.id, otherUserId: user.current?._id})
 			}
 			catch(e) {
-				setIsFollowing(false)
+				isFollowing.current = false
 			}
+
+			await addNotification(user.current?._id, 
+				{
+					message: 'followed you',
+					notificationType: 'Follow',
+					name: user.current?.name
+				}
+			)
 
 			return
 		}
@@ -121,7 +129,7 @@ const ProfilePage = () => {
 			await unfollowUser({ userId: currentUser?.id, otherUserId: user.current?._id})
 		}
 		catch(e) {
-			setIsFollowing(true)
+			isFollowing.current = true
 			setHasFollowed(true)
 		}
 	}
@@ -168,13 +176,20 @@ const ProfilePage = () => {
 									</div>
 								</div>
 								<div onMouseEnter={() => setFollowingHover(true)} onMouseLeave={() => setFollowingHover(false)} onClick={() => {
-									setIsFollowing(prev => !prev)
-									
-									if(isFollowing) setHasFollowed(false)
-									
+									isFollowing.current = !isFollowing.current
+
 									handleProfileClick()
-								}} className={`${hasFollowed && followingHover ? 'text-red-500 border border-red-200 hover:bg-red-200/50' : hasFollowed || sameUser || (!sameUser && isFollowing) ? 'border border-color hover:bg-gray-200' : 'hover:bg-black/75 bg-black text-white'} font-semibold rounded-full py-[5px] px-4 cursor-pointer transition-all  mt-[70px]`}>
-									{isFollowing && followingHover ? 'Unfollow' : isFollowing || hasFollowed ? 'Following' : sameUser ? 'Edit profile' : 'Follow'}
+
+									if(isFollowing.current && hasFollowed) {
+										setHasFollowed(false)
+										isFollowing.current = false
+
+										return
+									}
+
+									setHasFollowed(isFollowing.current)
+								}} className={`${hasFollowed && followingHover ? 'text-red-500 border border-red-200 hover:bg-red-200/50' : hasFollowed || sameUser || (!sameUser && isFollowing.current) ? 'border border-color hover:bg-gray-200' : 'hover:bg-black/75 bg-black text-white'} font-semibold rounded-full py-[5px] px-4 cursor-pointer transition-all  mt-[70px]`}>
+									{hasFollowed && followingHover ? 'Unfollow' : isFollowing.current || hasFollowed ? 'Following' : sameUser ? 'Edit profile' : 'Follow'}
 								</div>
 							</div>
 							<div className="ml-3 flex items-center mt-2 justify-between w-[165px]">
