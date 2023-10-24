@@ -18,7 +18,7 @@ import toast from 'react-hot-toast'
 
 const CommentModal = lazy(() => import('../modals/commentModal'))
 
-const TweetCard = ({ tweet, user, isComment = false, isPinnedTweet = false, isNotification = false, setTweetCount }) => {
+const TweetCard = ({ tweet, user, isComment = false, isPinnedTweet = false, isNotification = false }) => {
 	// eslint-disable-next-line
 	const [_, startTransition] = useTransition()
 	const buttonsHovered = useRef(false)
@@ -26,8 +26,8 @@ const TweetCard = ({ tweet, user, isComment = false, isPinnedTweet = false, isNo
 	const [showCommentModal, setShowCommentModal] = useState(false)
 	const [dropdownItemsHovered, setDropdownItemsHovered] = useState(false)
 	const [deleteClicked, setDeleteClicked] = useState(false)
+	const [hasUserRetweeted, setHasUserRetweeted] = useState(false)
 	const hasPinnedTweet = useRef(false)
-	const hasUserRetweeted = useRef(false)
 	const hasBookmark = useRef(false)
 	const [retweetClick, setRetweetClicked] = useState()
 	const currentHeartIcon = useRef(AiOutlineHeart)
@@ -142,7 +142,6 @@ const TweetCard = ({ tweet, user, isComment = false, isPinnedTweet = false, isNo
 		catch(error) {
 			toast.error('Error deleting tweet')
 			setDeleteClicked(false)
-			setTweetCount(user.tweetCount)
 		}
 	}
 
@@ -189,17 +188,9 @@ const TweetCard = ({ tweet, user, isComment = false, isPinnedTweet = false, isNo
 			hasBookmark.current = true
 		}
 
-		tweet.retweetUserId.map(retweetId => {
-			if(retweetId === user._id) {
-				hasUserRetweeted.current = true
+		const retweet = tweet.retweetUserId.filter(retweetId => retweetId === user._id)
 
-				return true
-			}
-
-			hasUserRetweeted.current = false
-
-			return false
-		})
+		if(retweet[0]) setHasUserRetweeted(true)
 
 		setCurrentCommentCount(tweet.commentsCount)
 
@@ -214,21 +205,21 @@ const TweetCard = ({ tweet, user, isComment = false, isPinnedTweet = false, isNo
 		}
 
 		currentLikeCount.current = tweet.likedUserId.length
-	}, [user, tweet?.likedUserId, tweet?.bookmarkCount, tweet?.retweetUserId, tweet?.commentsCount, tweet?._id, user?._id])
+	}, [hasUserRetweeted, user, tweet?.likedUserId, tweet?.bookmarkCount, tweet?.retweetUserId, tweet?.commentsCount, tweet?._id, user?._id])
 
 	return (
 		<>
 			<div id="tweet-card" onClick={() => (buttonsHovered.current && window.location.pathname === '/bookmarks') || showDropdown || (id && !isComment) || (username && !isComment && buttonsHovered.current) || (isComment && buttonsHovered.current) || (window.location.pathname === '/' && buttonsHovered.current) ? null : navigate(`/${tweet.username}/status/${tweet.uniqueId}`)} className={`${tweet.nestedComments.length < 1 || (tweet.nestedComments.length > 0  && window.location.pathname === '/') ? 'border-b' : ''} border-color ${(id && !isComment) || dropdownItemsHovered ? '' : 'hover:bg-gray-100/50'} ${id && !isComment ? '' : 'cursor-pointer'} ${deleteClicked ? 'hidden' : ''} w-full transition-all pt-2`}>
 				<div className="flex w-full">
 					<div>
-						{hasUserRetweeted.current || tweet._id === user.pinnedTweet || hasPinnedTweet.current || isPinnedTweet ? <div className="flex justify-end w-full text-gray-500 pr-2 pt-[3px]">
-							{hasUserRetweeted.current ? <AiOutlineRetweet /> : <BsPinFill />}
+						{hasUserRetweeted || tweet._id === user.pinnedTweet || hasPinnedTweet.current || isPinnedTweet ? <div className="flex justify-end w-full text-gray-500 pr-2 pt-[3px]">
+							{hasUserRetweeted ? <AiOutlineRetweet /> : <BsPinFill />}
 						</div> : null}
 						<p className="border-8 border-white bg-indigo-600 rounded-full text-white py-[6px] px-[15px] w-max h-max text-xl mr-1">{tweet.name.charAt(0)}</p>
 						{tweet.nestedComments.length < 1 || (tweet.nestedComments.length > 0  && window.location.pathname === '/') ? null : <div className="absolute bg-gray-300 w-[2px] top-0 ml-[26px] h-full"></div>}
 					</div>
 					<div className="w-full relative">
-						{tweet._id === user.pinnedTweet || hasPinnedTweet.current || isPinnedTweet || hasUserRetweeted.current ? <p className="text-sm text-gray-500 font-bold">{hasUserRetweeted.current ? 'You reposted' : 'Pinned post'}</p> : null}
+						{tweet._id === user.pinnedTweet || hasPinnedTweet.current || isPinnedTweet || hasUserRetweeted ? <p className="text-sm text-gray-500 font-bold">{hasUserRetweeted ? 'You reposted' : 'Pinned post'}</p> : null}
 						<div className="w-full flex justify-between items-center relative">
 							<div className={`flex ${id && !isComment ? 'flex-col' : ''}`}>
 								<p className="font-bold text-[15px] text-gray-700">{tweet.name}</p>
@@ -251,7 +242,6 @@ const TweetCard = ({ tweet, user, isComment = false, isPinnedTweet = false, isNo
 									{dropdownItem(() => {
 										setShowDropdown(false)
 										setDeleteClicked(true)
-										if(id && !isComment) setTweetCount(prev => prev - 1)
 										handleDeleteTweet()
 									}, BsTrash, 'Delete', 'text-red-500')}
 									{dropdownItem(() => {
@@ -267,7 +257,7 @@ const TweetCard = ({ tweet, user, isComment = false, isPinnedTweet = false, isNo
 								<p className="leading-5 text-slate-600">{tweet.body}</p>
 								<div className="w-[90%] flex justify-between mt-3 mb-2">
 									{Buttons(() => startTransition(() => setShowCommentModal(true)), 'bg-sky-500/10', 'text-sky-500', FaRegComment, false, currentCommentCount < 1 ? '' : currentCommentCount)}
-									{Buttons(() => setRetweetClicked(prev => !prev), 'bg-green-400/10', 'text-green-400', AiOutlineRetweet, hasUserRetweeted.current, tweet.retweetUserId.length < 1 ? '' : tweet.retweetUserId.length, tweet.userId !== user._id)}
+									{Buttons(() => setRetweetClicked(prev => !prev), 'bg-green-400/10', 'text-green-400', AiOutlineRetweet, hasUserRetweeted, tweet.retweetUserId.length < 1 ? '' : tweet.retweetUserId.length, tweet.userId !== user._id)}
 									{Buttons(handleHeartButton, 'bg-pink-500/10', 'text-pink-500', currentHeartIcon.current, isLiked, currentLikeCount.current < 1 ? '' : currentLikeCount.current)}
 									{Buttons(() => {
 										currentBookmarkCount.current = currentBookmarkIcon.current === BsBookmark ? currentBookmarkCount.current + 1 : currentBookmarkCount.current - 1
@@ -287,7 +277,7 @@ const TweetCard = ({ tweet, user, isComment = false, isPinnedTweet = false, isNo
 						</div>
 						<div className="w-full flex justify-between mt-3 mb-2 px-2 border-t border-color pt-2">
 							{Buttons(() => startTransition(() => setShowCommentModal(true)), 'bg-sky-500/10', 'text-sky-500', FaRegComment, false, currentCommentCount < 1 ? '' : currentCommentCount)}
-							{Buttons(() => {}, 'bg-green-400/10', 'text-green-400', AiOutlineRetweet, hasUserRetweeted.current, tweet.retweetUserId.length < 1 ? '' : tweet.retweetUserId.length, tweet.userId !== user._id)}
+							{Buttons(() => {}, 'bg-green-400/10', 'text-green-400', AiOutlineRetweet, hasUserRetweeted, tweet.retweetUserId.length < 1 ? '' : tweet.retweetUserId.length, tweet.userId !== user._id)}
 							{Buttons(handleHeartButton, 'bg-pink-500/10', 'text-pink-500', currentHeartIcon.current, isLiked, currentLikeCount.current < 1 ? '' : currentLikeCount.current)}
 							{Buttons(handleBookmark, 'bg-yellow-400/10', 'text-yellow-400', BsBookmark, false, '')}
 						</div>

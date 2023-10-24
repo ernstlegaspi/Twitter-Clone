@@ -1,7 +1,9 @@
 import express from 'express'
 
 import { login, register } from '../controllers/auth.js'
-import { generateOtp, getCurrentUser, getPinnedTweet, getUserLikedTweets, likeTweet, updatePinnedTweet, unlikeTweet, removePinnedTweet, addBookmark, removeBookmark, getBookmarks } from '../controllers/user.js'
+
+import { generateOtp, getCurrentUser, getPinnedTweet, getUserLikedTweets, likeTweet, updatePinnedTweet, unlikeTweet, removePinnedTweet, addBookmark, removeBookmark, getBookmarks, getFollowers, getFollowing, followUser, unfollowUser, getUserByUsername } from '../controllers/user.js'
+
 import { addTweet, getTweets, getSingleTweet, getTweetsByUsername, addComment, getCommentsByTweetId, addNestedComment, getNestedComments, retweet, addTweetIdToUser, undoRetweet, deleteTweet } from '../controllers/tweet.js'
 
 import { verifyToken } from '../middleware/auth.js'
@@ -54,7 +56,14 @@ router.post('/newNotification/:userId', verifyToken, addNotification)
 router.put('/updateNotificationCount/', verifyToken, updateNotificationCount)
 
 /* User Routes */
+router.get('/userByUsername/:username', verifyToken, getUserByUsername)
 router.get('/user/:id', verifyToken, getCurrentUser)
 router.get('/user/likedTweets/:username', verifyToken, getUserLikedTweets)
+
+router.get('/getFollowers/:userId', verifyToken, getFollowers)
+router.get('/getFollowing/:userId', verifyToken, getFollowing)
+
+router.put('/followUser/', verifyToken, followUser)
+router.put('/unfollowUser/', verifyToken, unfollowUser)
 
 export default router

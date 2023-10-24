@@ -38,7 +38,14 @@ export const updateNotificationCount = userId => API.put('updateNotificationCoun
 export const getNotifications = id => API.get(`getNotification/${id}`)
 
 export const getCurrentUser = id => API.get(`user/${id}`)
+export const getUserByUsername = username => API.get(`userByUsername/${username}`)
 export const getUserLikedTweets = username => API.get(`user/likedTweets/${username}`)
+
+export const getFollowers = userId => API.get(`getFollowers/${userId}`)
+export const getFollowing = userId => API.get(`getFollowing/${userId}`)
+
+export const followUser = data => API.put('followUser', data)
+export const unfollowUser = data => API.put('unfollowUser', data)
 
 export const loginApi = data => API.post('auth/login', data)
 export const register = data => API.post('auth/', data)

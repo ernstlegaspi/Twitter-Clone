@@ -196,6 +196,93 @@ export const removeBookmark = async (req, res) => {
 	}
 }
 
+export const followUser = async (req, res) => {
+	try {
+		const { userId, otherUserId } = req.body
+
+		if(!userId || !otherUserId) return clientError(res, 'Invalid Credentials')
+
+		await User.findByIdAndUpdate(userId,
+			{ $push: { following: otherUserId} },
+			{ new: true }
+		)
+
+		await User.findByIdAndUpdate(otherUserId,
+			{ $push: { followers: userId} },
+			{ new: true }
+		)
+
+		success(res, {}, 'Followed User')
+	}
+	catch(error) {
+		serverError(res)
+	}
+}
+
+export const unfollowUser = async (req, res) => {
+	try {
+		const { userId, otherUserId } = req.body
+
+		await User.findByIdAndUpdate(userId,
+			{ $pull: { following: otherUserId} },
+			{ new: true }
+		)
+
+		await User.findByIdAndUpdate(otherUserId,
+			{ $pull: { followers: userId} },
+			{ new: true }
+		)
+
+		success(res, {}, 'Unfollowed User')
+	}
+	catch(error) {
+		serverError(res)
+	}
+}
+
+export const getFollowers = async (req, res) => {
+	try {
+		const { userId } = req.params
+
+		const followers = await User.findById({ _id: userId })
+		.populate('followers')
+		.exec()
+
+		success(res, followers, 'Followers Retrieved')
+	}
+	catch(error) {
+		serverError(res)
+	}
+}
+
+export const getFollowing = async (req, res) => {
+	try {
+		const { userId } = req.params
+
+		const following = await User.findById({ _id: userId })
+		.populate('following')
+		.exec()
+
+		success(res, following, 'Followers Retrieved')
+	}
+	catch(error) {
+		serverError(res)
+	}
+}
+
+export const getUserByUsername = async (req, res) => {
+	try {
+		const { username } = req.params
+
+		const currentUser = await User.findOne({ username })
+
+		success(res, currentUser, 'Current User Retrieved')
+	}
+	catch(error) {
+		serverError(res)
+	}
+}
+
 // OTP
 export const generateOtp = (req, res) => {
 	const newOtp = otp.generate(6, { lowerCaseAlphabets: false, upperCaseAlphabets: false, specialChars: false })

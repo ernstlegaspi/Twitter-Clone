@@ -40,7 +40,7 @@ const PostForm = ({ showPostForm }) => {
 	}
 
 	return (
-		<div className="bg-black/40 inset-0 w-full h-full absolute flex justify-center">
+		<div className="bg-black/40 inset-0 w-full h-full absolute flex justify-center z-50">
 			<form onSubmit={handleSubmit} className="bg-white w-[600px] h-[315px] rounded-2xl mt-11 p-2">
 				<div className="w-full flex justify-between items-center">
 					<div onClick={() => startTransition(() => showPostForm(false))} className="w-max p-2 rounded-full cursor-pointer hover:bg-gray-200 transition-all">

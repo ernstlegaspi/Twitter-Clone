@@ -23,12 +23,19 @@ const TweetPage = lazy(() => import('./components/pages/tweetPage'))
 
 /*
 	TODO
-	5. Bookmarks - In Progress
-	6. Followers - Waiting
-	7. Following - Waiting
+	5. Follow - In progress
+	6. Followers - In progress
+	7. Following - In progress
+
+	--- END GAME --
 	8. Messages - Waiting
 	9. Google Login - Waiting
 	10. Facebook Login - Waiting
+
+	--- Clean up
+	Responsiveness
+	Optimize Code
+	fix send email load
 */
 
 const App = () => {
@@ -77,7 +84,7 @@ const App = () => {
 						<Route path='/' element={<Home user={user} />} />
 						<Route path='/notifications' element={<NotificationPage user={user} />} />
 						<Route path='/bookmarks' element={<BookmarkPage user={user} />} />
-						<Route path='/:username' element={<ProfilePage user={user} />} />
+						<Route path='/:username' element={<ProfilePage />} />
 						<Route path='/:username/status/:id' element={<TweetPage user={user} />} />
 					</Routes>
 					{user ? <Trends /> : null}
