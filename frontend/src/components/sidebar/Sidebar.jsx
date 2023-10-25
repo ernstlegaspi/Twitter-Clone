@@ -41,7 +41,7 @@ const Sidebar = ({ showLogoutModal, showPostForm, user }) => {
 				navigate('/notifications')
 				break
 			case 'Messages':
-				navigate('/Messages')
+				navigate('/messages')
 				break
 			case 'Lists':
 				navigate('/Lists')

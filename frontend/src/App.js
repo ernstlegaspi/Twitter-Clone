@@ -19,16 +19,12 @@ const PostFormModal = lazy(() => import('./components/modals/postFormModal'))
 const BookmarkPage  = lazy(() => import('./components/pages/bookmarkPage'))
 const FollowersPage = lazy(() => import('./components/pages/followersPage'))
 const FollowingPage = lazy(() => import('./components/pages/followingPage'))
+const MessagePage = lazy(() => import('./components/pages/messagePage'))
 const NotificationPage = lazy(() => import('./components/pages/notificationPage'))
 const ProfilePage = lazy(() => import('./components/pages/profilePage'))
 const TweetPage = lazy(() => import('./components/pages/tweetPage'))
 
 /*
-	TODO
-	5. Follow - In progress
-	6. Followers - In progress
-	7. Following - In progress
-
 	--- END GAME --
 	8. Messages - Waiting
 	9. Google Login - Waiting
@@ -90,8 +86,9 @@ const App = () => {
 						<Route path='/:username/status/:id' element={<TweetPage user={user} />} />
 						<Route path='/:username/followers' element={<FollowersPage user={user} />} />
 						<Route path='/:username/following' element={<FollowingPage user={user} />} />
+						<Route path='/messages' element={<MessagePage />} />
 					</Routes>
-					{user ? <Trends /> : null}
+					{user && window.location.pathname !== '/messages' ? <Trends /> : null}
 				</Suspense>
 			</BrowserRouter>
 		</div>

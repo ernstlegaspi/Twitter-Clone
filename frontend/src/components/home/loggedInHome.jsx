@@ -6,7 +6,11 @@ import { getAllTweets } from '../../api/api'
 import { setTweets } from '../../slices/tweet/tweetSlice'
 import { logout } from '../../slices/auth/authSlice'
 
+import { io } from 'socket.io-client'
+
 const HomeContent = lazy(() => import('./components/homeContent'))
+
+const socket = io('http://localhost:3001')
 
 const LoggedInHome = ({ user }) => {
 	const dispatch = useDispatch()
