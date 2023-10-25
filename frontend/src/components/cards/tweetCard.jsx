@@ -23,6 +23,7 @@ const TweetCard = ({ tweet, user, isComment = false, isPinnedTweet = false, isNo
 	const [_, startTransition] = useTransition()
 	const buttonsHovered = useRef(false)
 	const [showDropdown, setShowDropdown] = useState(false)
+	const [profileHovered, setProfileHovered] = useState(false)
 	const [showCommentModal, setShowCommentModal] = useState(false)
 	const [dropdownItemsHovered, setDropdownItemsHovered] = useState(false)
 	const [deleteClicked, setDeleteClicked] = useState(false)
@@ -209,21 +210,37 @@ const TweetCard = ({ tweet, user, isComment = false, isPinnedTweet = false, isNo
 
 	return (
 		<>
-			<div id="tweet-card" onClick={() => (buttonsHovered.current && window.location.pathname === '/bookmarks') || showDropdown || (id && !isComment) || (username && !isComment && buttonsHovered.current) || (isComment && buttonsHovered.current) || (window.location.pathname === '/' && buttonsHovered.current) ? null : navigate(`/${tweet.username}/status/${tweet.uniqueId}`)} className={`${tweet.nestedComments.length < 1 || (tweet.nestedComments.length > 0  && window.location.pathname === '/') ? 'border-b' : ''} border-color ${(id && !isComment) || dropdownItemsHovered ? '' : 'hover:bg-gray-100/50'} ${id && !isComment ? '' : 'cursor-pointer'} ${deleteClicked ? 'hidden' : ''} w-full transition-all pt-2`}>
+			<div id="tweet-card" onClick={() => 
+				(buttonsHovered.current && window.location.pathname === '/bookmarks') 
+				|| showDropdown
+				|| profileHovered
+				|| (id && !isComment)
+				|| (username && !isComment && buttonsHovered.current)
+				|| (isComment && buttonsHovered.current)
+				|| (window.location.pathname === '/' && buttonsHovered.current) ? null
+				: navigate(`/${tweet.username}/status/${tweet.uniqueId}`)}
+				className={`${tweet.nestedComments.length < 1 || (tweet.nestedComments.length > 0  && window.location.pathname === '/') ? 'border-b' : ''} border-color ${(id && !isComment) || dropdownItemsHovered ? '' : 'hover:bg-gray-100/50'} ${id && !isComment ? '' : 'cursor-pointer'} ${deleteClicked ? 'hidden' : ''} w-full transition-all pt-2`}>
 				<div className="flex w-full">
 					<div>
 						{hasUserRetweeted || tweet._id === user.pinnedTweet || hasPinnedTweet.current || isPinnedTweet ? <div className="flex justify-end w-full text-gray-500 pr-2 pt-[3px]">
 							{hasUserRetweeted ? <AiOutlineRetweet /> : <BsPinFill />}
 						</div> : null}
-						<p className="border-8 border-white bg-indigo-600 rounded-full text-white py-[6px] px-[15px] w-max h-max text-xl mr-1">{tweet.name.charAt(0)}</p>
+						<p onMouseEnter={() => {
+							setProfileHovered(true)
+						}} onMouseLeave={() => setProfileHovered(false)} onClick={() => navigate(`/${tweet?.username}/`)} 
+						className="border-8 border-white bg-indigo-600 rounded-full text-white py-[6px] px-[15px] w-max h-max text-xl mr-1">{tweet.name.charAt(0)}</p>
 						{tweet.nestedComments.length < 1 || (tweet.nestedComments.length > 0  && window.location.pathname === '/') ? null : <div className="absolute bg-gray-300 w-[2px] top-0 ml-[26px] h-full"></div>}
 					</div>
 					<div className="w-full relative">
 						{tweet._id === user.pinnedTweet || hasPinnedTweet.current || isPinnedTweet || hasUserRetweeted ? <p className="text-sm text-gray-500 font-bold">{hasUserRetweeted ? 'You reposted' : 'Pinned post'}</p> : null}
 						<div className="w-full flex justify-between items-center relative">
 							<div className={`flex ${id && !isComment ? 'flex-col' : ''}`}>
-								<p className="font-bold text-[15px] text-gray-700">{tweet.name}</p>
-								<p className={`text-gray-500 ${id && !isComment ? 'mx-[-2px] text-sm' : 'mx-1'}`}>@{tweet.username}</p>
+								<p onMouseEnter={() => {
+									setProfileHovered(true)
+								}} onMouseLeave={() => setProfileHovered(false)} onClick={() => navigate(`/${tweet?.username}/`)} className="cursor-pointer hover:underline font-bold text-[15px] text-gray-700">{tweet.name}</p>
+								<p onMouseEnter={() => {
+									setProfileHovered(true)
+								}} onMouseLeave={() => setProfileHovered(false)} onClick={() => navigate(`/${tweet?.username}/`)} className={`cursor-pointer hover:underline text-gray-500 ${id && !isComment ? 'mx-[-2px] text-sm' : 'mx-1'}`}>@{tweet.username}</p>
 								{id && !isComment ? null : (
 									<p className="text-gray-500">· {
 										cond("day ago") ? "Yesterday"

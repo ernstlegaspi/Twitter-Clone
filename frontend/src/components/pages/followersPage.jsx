@@ -16,7 +16,9 @@ const FollowersPage = ({ user }) => {
 	const navigate = useNavigate()
 	const params = useParams()
 
-	const menu = (text, width, isActive) => <div className="px-5 flex-grow relative h-[57px] cursor-pointer hover:bg-gray-200 transition all flex flex-col items-center justify-end">
+	const menu = (text, width, isActive) => <div onClick={() => {
+		if(text === 'Following') navigate(`/${searchedUser?.username}/following`)
+	}} className="px-5 flex-grow relative h-[57px] cursor-pointer hover:bg-gray-200 transition all flex flex-col items-center justify-end">
 		<div className={`flex items-center justify-center h-full ${isActive ? 'text-black' : 'text-gray-500'} font-semibold`}>{text}</div>
 		{isActive ? <div className={`absolute mt-[-5px] bg-indigo-500 rounded-full h-[5px] ${width}`}></div> : null}
 	</div>
@@ -42,7 +44,7 @@ const FollowersPage = ({ user }) => {
 	return (
 		<div className="h-full feed-scroll w-[600px] border border-y-0 border-color">
 			<div className="p-3 flex">
-				<div onClick={() => navigate('/')} className="cursor-pointer transition-all hover:bg-gray-200 rounded-full w-max h-max p-2 mr-3">
+				<div onClick={() => navigate(`/${searchedUser?.username}`)} className="cursor-pointer transition-all hover:bg-gray-200 rounded-full w-max h-max p-2 mr-3">
 					<FiArrowLeft size={20} />
 				</div>
 				<div>

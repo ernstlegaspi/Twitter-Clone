@@ -134,7 +134,15 @@ const ProfilePage = () => {
 		}
 	}
 
-	const formattedText = (bold, normal) => <div className="flex items-center cursor-pointer hover:underline">
+	const formattedText = (bold, normal) => <div onClick={() => {
+		if(normal.toLowerCase().includes('follower')) {
+			navigate(`/${user.current?.username}/followers`)
+
+			return
+		}
+
+		navigate(`/${user.current?.username}/following`)
+	}} className="flex items-center cursor-pointer hover:underline">
 		<p className="font-semibold mr-1">{bold}</p>
 		<p className="text-gray-500">{normal}</p>
 	</div>
