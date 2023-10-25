@@ -7,6 +7,19 @@ import mailGen from 'mailgen'
 
 import { clientError, serverError, success } from '../utils/index.js'
 
+export const getUsers = async (req, res) => {
+	try {
+		const users = await User.find()
+
+		if(!users) return clientError(res, 'No user', 404)
+		
+		success(res, users, 'Users Retrieved')
+	}
+	catch(error) {
+		serverError(res)
+	}
+}
+
 export const getCurrentUser = async (req, res) => {
 	try {
 		const { id } = req.params

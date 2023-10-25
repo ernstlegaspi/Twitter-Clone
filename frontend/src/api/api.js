@@ -41,6 +41,8 @@ export const getCurrentUser = id => API.get(`user/${id}`)
 export const getUserByUsername = username => API.get(`userByUsername/${username}`)
 export const getUserLikedTweets = username => API.get(`user/likedTweets/${username}`)
 
+export const getUsers = () => API.get('getUsers/')
+
 export const getFollowers = userId => API.get(`getFollowers/${userId}`)
 export const getFollowing = userId => API.get(`getFollowing/${userId}`)
 

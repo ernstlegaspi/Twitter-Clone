@@ -14,6 +14,7 @@ const Trends = lazy(() => import('./components/trends/Trends'))
 // Modals
 const LogoutModal = lazy(() => import('./components/modals/logoutModal'))
 const PostFormModal = lazy(() => import('./components/modals/postFormModal'))
+const MessageUserModal = lazy(() => import('./components/modals/messageUserModal'))
 
 // Pages
 const BookmarkPage  = lazy(() => import('./components/pages/bookmarkPage'))
@@ -39,6 +40,7 @@ const TweetPage = lazy(() => import('./components/pages/tweetPage'))
 const App = () => {
 	const [showPostForm, setShowPostForm] = useState(false)
 	const [showLogoutModal, setShowLogoutModal] = useState(false)
+	const [showMessageUserModal, setShowMessageUserModal] = useState(false)
 	const userInfo = JSON.parse(localStorage.getItem('userInfo'))
 	const userInfoRef = useRef(userInfo)
 
@@ -78,6 +80,7 @@ const App = () => {
 					{user ? <Sidebar showLogoutModal={setShowLogoutModal} showPostForm={setShowPostForm} user={user} /> : null}
 					{showPostForm ? <PostFormModal showPostForm={setShowPostForm} /> : null}
 					{showLogoutModal ? <LogoutModal showLogoutModal={setShowLogoutModal} /> : null}
+					{showMessageUserModal ? <MessageUserModal currentUser={user} showMessageUserModal={setShowMessageUserModal} /> : null}
 					<Routes>
 						<Route path='/' element={<Home user={user} />} />
 						<Route path='/notifications' element={<NotificationPage user={user} />} />
@@ -86,7 +89,7 @@ const App = () => {
 						<Route path='/:username/status/:id' element={<TweetPage user={user} />} />
 						<Route path='/:username/followers' element={<FollowersPage user={user} />} />
 						<Route path='/:username/following' element={<FollowingPage user={user} />} />
-						<Route path='/messages' element={<MessagePage />} />
+						<Route path='/messages' element={<MessagePage showMessageUserModal={setShowMessageUserModal} />} />
 					</Routes>
 					{user && window.location.pathname !== '/messages' ? <Trends /> : null}
 				</Suspense>

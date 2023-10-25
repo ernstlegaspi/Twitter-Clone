@@ -6,7 +6,8 @@ const userSlice = createSlice({
 		followers: undefined,
 		following: undefined,
 		searchedUser: undefined,
-		user: undefined
+		user: undefined,
+		users: undefined
 	},
 	reducers: {
 		setCurrentUser: (state, action) => {
@@ -20,10 +21,13 @@ const userSlice = createSlice({
 		},
 		setSearchedUser: (state, action) => {
 			state.searchedUser = action.payload
-		}
+		},
+		setUsers: (state, action) => {
+			state.users = action.payload
+		},
 	}
 })
 
-export const { setCurrentUser, setFollowers, setFollowing, setSearchedUser } = userSlice.actions
+export const { setCurrentUser, setFollowers, setFollowing, setSearchedUser, setUsers } = userSlice.actions
 
 export default userSlice.reducer
