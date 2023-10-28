@@ -71,7 +71,7 @@ const Sidebar = ({ showLogoutModal, showPostForm, user }) => {
 			<SidebarItem onClick={() => handleClickCondition('Messages')} Icon={AiOutlineMail} label='Messages' />
 			<SidebarItem onClick={() => handleClickCondition('Lists')} Icon={RiFileList2Line} label='Lists' />
 			<SidebarItem onClick={() => handleClickCondition('Bookmarks')} Icon={BsBookmark} label='Bookmarks' />
-			<SidebarItem onClick={() => handleClickCondition('Communities')} Icon={BsPeople} label='Communities'  />
+			<SidebarItem onClick={() => handleClickCondition('Communities')} Icon={BsPeople} label='Communities' />
 			<SidebarItem onClick={() => handleClickCondition('Profile')} Icon={BsPerson} label='Profile' username={user.username} />
 		</>
 	)
@@ -87,9 +87,9 @@ const Sidebar = ({ showLogoutModal, showPostForm, user }) => {
 					</Link>
 				</div>
 				<ListItems />
-				<button onClick={() => startTransition(() => showPostForm(true))} className="mt-7 font-bold text-white rounded-full purple-button hover:bg-indigo-600 transition-all w-[85%] py-[10px] text-lg">Post</button>
+				<button onClick={() => startTransition(() => showPostForm(true))} className="mt-7 font-bold text-white rounded-full purple-button hover:bg-violet-600 transition-all w-[85%] py-[10px] text-lg">Post</button>
 				<div onClick={() => showLogoutModal(true)} className="cursor-pointer transition-all hover:bg-gray-200 w-[95%] flex items-center rounded-full p-3 absolute bottom-5">
-					<p className="bg-indigo-600 rounded-full text-white py-[6px] px-[15px] w-max h-max text-xl mr-3">{user.name.charAt(0)}</p>
+					<p className="purple-button rounded-full text-white py-[6px] px-[15px] w-max h-max text-xl mr-3">{user.name.charAt(0)}</p>
 					<div className="flex items-center justify-between w-full">
 						<div>
 							<p className="font-bold">{user.name}</p>

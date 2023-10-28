@@ -10,8 +10,6 @@ const BookmarkPage = ({ user }) => {
 	const dispatch = useDispatch()
 	const bookmarks = useSelector(state => state.tweet.bookmarks)
 
-	console.log(bookmarks)
-
 	useEffect(() => {
 		const userBookmarks = async () => {
 			const { data } = await getBookmarks(user._id)

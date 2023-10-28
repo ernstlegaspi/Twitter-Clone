@@ -32,7 +32,7 @@ const MessageUserModal = ({ currentUser, showMessageUserModal }) => {
 					<p className="font-bold text-xl ml-3">New message</p>
 				</div>
 				<div className="w-full h-[93%]">
-					{!users ? <div className="w-full pt-10 flex items-center justify-center"><PulseLoader size={10} color="#0EA5E9" /></div> : users.map(user => currentUser._id !== user._id ? <UserCard user={user} /> : null)}
+					{!users ? <div className="w-full pt-10 flex items-center justify-center"><PulseLoader size={10} color="#0EA5E9" /></div> : users.map(user => currentUser._id !== user._id ? <UserCard key={user._id} user={user} /> : null)}
 				</div>
 			</div>
 		</div>

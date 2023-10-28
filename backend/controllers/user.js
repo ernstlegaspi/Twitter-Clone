@@ -57,6 +57,7 @@ export const getUserLikedTweets = async (req, res) => {
 		serverError(res)
 	}
 }
+
 export const likeTweet = async (req, res) => {
 	try {
 		const { id, userId } = req.body
@@ -292,6 +293,21 @@ export const getUserByUsername = async (req, res) => {
 		const currentUser = await User.findOne({ username })
 
 		success(res, currentUser, 'Current User Retrieved')
+	}
+	catch(error) {
+		serverError(res)
+	}
+}
+
+export const getConversationsPerCurrentUser = async (req, res) => {
+	try {
+		const { userId } = req.params
+		
+		const conversations = await User.findById({ _id: userId })
+		.populate('conversations')
+		.exec()
+		
+		success(res, conversations, 'Conversation retrieved')
 	}
 	catch(error) {
 		serverError(res)

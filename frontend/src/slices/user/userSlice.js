@@ -3,6 +3,8 @@ import { createSlice } from '@reduxjs/toolkit'
 const userSlice = createSlice({
 	name: 'user',
 	initialState: {
+		conversations: undefined,
+		currentConvo: undefined,
 		followers: undefined,
 		following: undefined,
 		searchedUser: undefined,
@@ -10,6 +12,12 @@ const userSlice = createSlice({
 		users: undefined
 	},
 	reducers: {
+		setConversations: (state, action) => {
+			state.conversations = action.payload
+		},
+		setCurrentConvo: (state, action) => {
+			state.currentConvo = action.payload
+		},
 		setCurrentUser: (state, action) => {
 			state.user = action.payload
 		},
@@ -24,10 +32,10 @@ const userSlice = createSlice({
 		},
 		setUsers: (state, action) => {
 			state.users = action.payload
-		},
+		}
 	}
 })
 
-export const { setCurrentUser, setFollowers, setFollowing, setSearchedUser, setUsers } = userSlice.actions
+export const { setConversations, setCurrentConvo, setCurrentUser, setFollowers, setFollowing, setSearchedUser, setUsers } = userSlice.actions
 
 export default userSlice.reducer

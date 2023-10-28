@@ -89,7 +89,7 @@ const App = () => {
 						<Route path='/:username/status/:id' element={<TweetPage user={user} />} />
 						<Route path='/:username/followers' element={<FollowersPage user={user} />} />
 						<Route path='/:username/following' element={<FollowingPage user={user} />} />
-						<Route path='/messages' element={<MessagePage showMessageUserModal={setShowMessageUserModal} />} />
+						<Route path='/messages' element={<MessagePage user={user} showMessageUserModal={setShowMessageUserModal} />} />
 					</Routes>
 					{user && window.location.pathname !== '/messages' ? <Trends /> : null}
 				</Suspense>

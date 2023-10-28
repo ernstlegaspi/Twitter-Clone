@@ -69,6 +69,10 @@ const userSchema = new mongoose.Schema({
 	bookmark: [{
 		type: mongoose.Schema.ObjectId,
 		ref: 'Tweet'
+	}],
+	conversations: [{
+		type: mongoose.Schema.ObjectId,
+		ref: 'Conversation'
 	}]
 }, { timestamps: true })
 
