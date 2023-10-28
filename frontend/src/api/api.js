@@ -52,7 +52,7 @@ export const unfollowUser = data => API.put('unfollowUser', data)
 export const loginApi = data => API.post('auth/login', data)
 export const register = data => API.post('auth/', data)
 
-export const newConversation = (userId, data) => API.post(`newConversation/${userId}`, data)
+export const newConversation = data => API.post(`newConversation/`, data)
 export const newMessage = (conversationId, data) => API.post(`newMessage/${conversationId}`, data)
 
 export const getConversationsPerCurrentUser = userId => API.get(`getConversationsPerCurrentUser/${userId}`)

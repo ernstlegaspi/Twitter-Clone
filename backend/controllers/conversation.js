@@ -6,11 +6,16 @@ import { serverError, success } from '../utils/index.js'
 
 export const newConversation = async (req, res) => {
 	try {
-		const { userId } = req.params
-		
-		const newConvo = await new Conversation({ ...req.body }).save()
+		const { userId, otherUserId } = req.body
+
+		const newConvo = await new Conversation({ users: [userId, otherUserId] }).save()
 
 		await User.findByIdAndUpdate(userId,
+			{ $push: { conversations: newConvo._id } },
+			{ new: true }
+		)
+
+		await User.findByIdAndUpdate(otherUserId,
 			{ $push: { conversations: newConvo._id } },
 			{ new: true }
 		)
@@ -29,8 +34,11 @@ export const newMessage = async (req, res) => {
 		const _newMessage = await new Message({ ...req.body }).save()
 
 		await Conversation.findByIdAndUpdate(conversationId,
-			{ $push: { messages: _newMessage._id } },
-			{ new: true }
+			{
+				$push: { messages: _newMessage._id },
+				$set: { updatedAt: new Date() }
+			 },
+			 { new: true }
 		)
 
 		success(res, {}, 'Message created')

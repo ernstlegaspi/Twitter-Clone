@@ -12,12 +12,14 @@ const ConfirmationMessageModal = ({ showConfirmationMessageModal, user }) => {
 		if(!currentUser) return
 		
 		try {
-			await newConversation(currentUser._id,
-				{
-					name: user?.name,
-					username: user?.username
-				}
-			)
+			await newConversation({
+				name: user?.name,
+				username: user?.username,
+				userId: currentUser?._id,
+				otherUserId: user?._id
+			})
+
+			alert(1)
 
 			showConfirmationMessageModal(false)
 

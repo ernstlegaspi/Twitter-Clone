@@ -71,7 +71,7 @@ router.put('/unfollowUser/', verifyToken, unfollowUser)
 
 router.get('/getConversationsPerCurrentUser/:userId', verifyToken, getConversationsPerCurrentUser)
 
-router.post('/newConversation/:userId', verifyToken, newConversation)
+router.post('/newConversation/', verifyToken, newConversation)
 
 router.post('/newMessage/:conversationId', verifyToken, newMessage)
 

@@ -4,6 +4,7 @@ const userSlice = createSlice({
 	name: 'user',
 	initialState: {
 		conversations: undefined,
+		conversationMessages: undefined,
 		currentConvo: undefined,
 		followers: undefined,
 		following: undefined,
@@ -14,6 +15,9 @@ const userSlice = createSlice({
 	reducers: {
 		setConversations: (state, action) => {
 			state.conversations = action.payload
+		},
+		setConversationsMessages: (state, action) => {
+			state.conversationMessages = action.payload
 		},
 		setCurrentConvo: (state, action) => {
 			state.currentConvo = action.payload
@@ -36,6 +40,6 @@ const userSlice = createSlice({
 	}
 })
 
-export const { setConversations, setCurrentConvo, setCurrentUser, setFollowers, setFollowing, setSearchedUser, setUsers } = userSlice.actions
+export const { setConversations, setConversationsMessages, setCurrentConvo, setCurrentUser, setFollowers, setFollowing, setSearchedUser, setUsers } = userSlice.actions
 
 export default userSlice.reducer

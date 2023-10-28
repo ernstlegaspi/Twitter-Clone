@@ -5,9 +5,10 @@ const conversationSchema = new mongoose.Schema({
 		type: mongoose.Schema.ObjectId,
 		ref: 'Message'
 	}],
-	name: String,
-	username: String,
-	image: String,
+	users: [{
+		type: mongoose.Schema.ObjectId,
+		ref: 'User'
+	}],
 	lastChat: String
 }, { timestamps: true })
 

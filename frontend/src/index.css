@@ -31,6 +31,14 @@ html, body {
 	color: #7856ff;
 }
 
+.purple-text-disabled {
+	color: rgba(120, 86, 255, 0.4)
+}
+
+.input-color {
+	background: #eff3f4
+}
+
 .feed-scroll {
 	overflow-y: scroll;
 }

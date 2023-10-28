@@ -44,14 +44,14 @@ const MessagePage = ({ showMessageUserModal, user }) => {
 	</>
 	
 	return (
-		<div className="flex">
+		<div className="flex h-full">
 			<div className="border-l border-r border-color w-[395px]">
 				<Header />
 				{!conversations || conversations?.length < 1 ? <div className="w-[80%] mx-auto mt-[30px]">
 					{guideSection('Welcome to your inbox!', 'Drop a line, share posts and more with private conversations between you and others on X.', 'Write a message', () => showMessageUserModal(true))}
-				</div> : conversations.map(user => <ConversationCard key={user._id} user={user} isActive={currentConvo.name === user.name} />)}
+				</div> : conversations.map(conversation => <ConversationCard key={conversation?._id} conversation={conversation} />)}
 			</div>
-			<div className="border-r border-color w-[600px]">
+			<div className="border-r border-color w-[600px] h-full">
 				{!conversations || conversations?.length < 1 ? <div className="w-[60%] mx-auto top-[50%] relative translate-y-[-50%]">
 					{guideSection('Select a message', 'Choose from your existing conversations, start a new one, or just keep swimming.', 'New message', () => showMessageUserModal(true))}
 				</div> : !currentConvo ? <div className="w-[60%] mx-auto top-[50%] relative translate-y-[-50%]">

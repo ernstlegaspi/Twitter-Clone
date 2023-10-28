@@ -304,7 +304,13 @@ export const getConversationsPerCurrentUser = async (req, res) => {
 		const { userId } = req.params
 		
 		const conversations = await User.findById({ _id: userId })
-		.populate('conversations')
+		.populate({
+			path: 'conversations',
+			populate: {
+				path: 'users',
+				model: 'User'
+			}
+		})
 		.exec()
 		
 		success(res, conversations, 'Conversation retrieved')
