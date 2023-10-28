@@ -36,9 +36,12 @@ export const newMessage = async (req, res) => {
 		await Conversation.findByIdAndUpdate(conversationId,
 			{
 				$push: { messages: _newMessage._id },
-				$set: { updatedAt: new Date() }
-			 },
-			 { new: true }
+				$set: {
+					updatedAt: new Date(),
+					lastChat: _newMessage?.body
+				}
+			},
+			{ new: true }
 		)
 
 		success(res, {}, 'Message created')

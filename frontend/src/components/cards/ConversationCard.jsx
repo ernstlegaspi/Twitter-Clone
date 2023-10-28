@@ -10,7 +10,7 @@ const ConversationCard = ({ isActive, conversation }) => {
 
 	useEffect(() => {
 		if(!currentUser) return
-		
+
 		const otherUser = conversation?.users.filter(user => user._id !== currentUser._id)
 		
 		user.current = otherUser[0]
@@ -32,7 +32,7 @@ const ConversationCard = ({ isActive, conversation }) => {
 						<p className="cursor-pointer hover:underline font-bold text-[15px] text-gray-700 ml-2">{user.current?.name}</p>
 						<p className="cursor-pointer hover:underline text-gray-500 mx-1 text-sm">@{user.current?.username}</p>
 					</div>
-					<p className="text-[15px] text-gray-500 ml-2">&nbsp;</p>
+					{conversation?.lastChat !== '' ? <p className="text-sm text-gray-400 ml-2">{conversation?.lastChat}</p> : <p className="text-[15px] text-gray-500 ml-2">&nbsp;</p>}
 				</div>
 			</div>
 		</div>
