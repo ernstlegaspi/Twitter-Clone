@@ -2,15 +2,17 @@ import React, { useState } from 'react'
 
 import { useDispatch } from 'react-redux'
 import { login } from '../../slices/auth/authSlice'
-import { loginApi } from '../../api/api'
+import { loginApi, register } from '../../api/api'
 
-import { AiFillApple, AiOutlineClose, AiOutlineGoogle } from 'react-icons/ai'
+import { AiOutlineClose } from 'react-icons/ai'
 
 import { LazyLoadImage } from 'react-lazy-load-image-component'
 
 import { toast } from 'react-hot-toast'
 
 import 'react-lazy-load-image-component/src/effects/blur.css'
+import { GoogleLogin } from '@react-oauth/google'
+import { jwtDecode } from 'jwt-decode'
 
 const LoginFormModal = ({ setShowLogin }) => {
 	const dispatch = useDispatch()
@@ -43,13 +45,28 @@ const LoginFormModal = ({ setShowLogin }) => {
 							<LazyLoadImage width={40} height={40} effect='Blur' alt="X" src="/images/logo.webp" />
 						</div>
 						<p className="font-bold text-[28px] mt-6">Sign in to X</p>
-						<div className="cursor-pointer transition-all hover:bg-slate-200 mt-6 py-[6px] w-[300px] justify-center rounded-full border flex items-center max-[400px]:w-[100%]">
-							<AiOutlineGoogle size={22} className="mr-1" />
-							<p className="font-semibold text-[18px]">Sign up with Google</p>
-						</div>
-						<div className="cursor-pointer transition-all hover:bg-slate-200 mt-6 py-[6px] w-[300px] justify-center rounded-full border flex items-center max-[400px]:w-[100%]">
-							<AiFillApple size={22} className="mr-1" />
-							<p className="font-semibold text-[18px]">Sign up with Apple</p>
+						<div className="mt-2 w-[295px] flex justify-center">
+							<GoogleLogin
+								onSuccess={async response => {
+									const res = jwtDecode(response.credential)
+
+									try {
+										const { data } = await loginApi({ emailUsername: res.email, isGoogle: true })
+
+										dispatch(login(data.result))
+									}
+									catch({ response }) {
+										if(response.data.message === 'No user') {
+											console.log(12)
+											const { data } = await register({ birthday: 's', password: 'mxzkochjoi12dsa', name: res.name, email: res.email })
+
+											dispatch(login(data.result))
+										}
+									}
+
+									window.location.reload()
+								}}
+							/>
 						</div>
 						<div className="relative mt-6">
 							<div className="w-auto bg-slate-200 h-[1px]"></div>

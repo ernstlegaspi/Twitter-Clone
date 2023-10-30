@@ -26,17 +26,6 @@ const NotificationPage = lazy(() => import('./components/pages/notificationPage'
 const ProfilePage = lazy(() => import('./components/pages/profilePage'))
 const TweetPage = lazy(() => import('./components/pages/tweetPage'))
 
-/*
-	--- END GAME --
-	9. Google Login - Waiting
-	10. Facebook Login - Waiting
-
-	--- Clean up
-	Responsiveness
-	Optimize Code
-	fix send email load
-*/
-
 const App = () => {
 	const [showPostForm, setShowPostForm] = useState(false)
 	const [showLogoutModal, setShowLogoutModal] = useState(false)

@@ -2,8 +2,7 @@ import React, { lazy, Suspense, useState, useTransition } from 'react'
 
 import { LazyLoadImage } from 'react-lazy-load-image-component'
 import { footerNavigationText } from '../../../constants'
-import { AiFillApple } from 'react-icons/ai'
-import { GoogleLogin, googleLogout } from '@react-oauth/google'
+import { GoogleLogin } from '@react-oauth/google'
 
 import 'react-lazy-load-image-component/src/effects/blur.css'
 import { jwtDecode } from 'jwt-decode'
@@ -42,13 +41,6 @@ const LandingPage = () => {
 									window.location.reload()
 								}}
 							/>
-						</div>
-						<div onClick={() => {
-							googleLogout()
-							alert(1)
-						}} className="cursor-pointer transition-all hover:bg-slate-200 mt-6 py-1 w-[300px] justify-center rounded-full border flex items-center max-[400px]:w-[100%]">
-							<AiFillApple size={22} className="mr-1" />
-							<p className="font-semibold text-[18px]">Sign up with Apple</p>
 						</div>
 						<div className="w-[300px] mt-6 max-[400px]:w-[100%]">
 							<div className="w-auto bg-slate-200 h-[1px]"></div>

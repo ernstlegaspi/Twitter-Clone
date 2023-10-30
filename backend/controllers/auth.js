@@ -3,18 +3,22 @@ import jwt from 'jsonwebtoken'
 
 import User from '../models/user.js'
 
-import { badReq, conflict, serverError, success } from '../utils/index.js'
+import { badReq, clientError, conflict, serverError, success } from '../utils/index.js'
 
 export const login = async (req, res) => {
 	try {
-		const { emailUsername, password, isGoogle } = req.body
+		const { emailUsername, password, isGoogle, newUser } = req.body
 
 		let user = null
 		
 		if(isGoogle) {
 			user = await User.findOne({ email: emailUsername })
 
-			const token = jwt.sign({ id: user._id }, process.env.KEY, { expiresIn: '3h' })
+			if(!user) return clientError(res, 'No user', 404)
+			
+			let token = null
+
+			token = jwt.sign({ id: user._id }, process.env.KEY, { expiresIn: '3h' })
 
 			return success(res, {
 				id: user._id,
