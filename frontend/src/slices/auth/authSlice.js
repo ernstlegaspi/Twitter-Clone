@@ -1,3 +1,4 @@
+import { googleLogout } from '@react-oauth/google'
 import { createSlice } from '@reduxjs/toolkit'
 
 const auth = createSlice({
@@ -13,6 +14,7 @@ const auth = createSlice({
 		},
 		logout: (state, action) => {
 			state.userInfo = null
+			googleLogout()
 			localStorage.removeItem('userInfo')
 			localStorage.removeItem('persist:root')
 		},

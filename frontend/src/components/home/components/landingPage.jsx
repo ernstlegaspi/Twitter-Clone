@@ -2,9 +2,14 @@ import React, { lazy, Suspense, useState, useTransition } from 'react'
 
 import { LazyLoadImage } from 'react-lazy-load-image-component'
 import { footerNavigationText } from '../../../constants'
-import { AiFillApple, AiOutlineGoogle } from 'react-icons/ai'
+import { AiFillApple } from 'react-icons/ai'
+import { GoogleLogin, googleLogout } from '@react-oauth/google'
 
 import 'react-lazy-load-image-component/src/effects/blur.css'
+import { jwtDecode } from 'jwt-decode'
+import { useDispatch } from 'react-redux'
+import { login } from '../../../slices/auth/authSlice'
+import { loginApi } from '../../../api/api'
 
 const LoginModal = lazy(() => import('../../modals/loginModal'))
 const RegisterModal = lazy(() => import('../../modals/register/registerModal'))
@@ -12,10 +17,11 @@ const RegisterModal = lazy(() => import('../../modals/register/registerModal'))
 const LandingPage = () => {
 	const [showLogin, setShowLogin] = useState(false)
 	const [showRegister, setShowRegister] = useState(false)
+	const dispatch = useDispatch()
 
 	// eslint-disable-next-line
 	const [_, startTransition] = useTransition()
-	
+
 	return (
 		<div className="h-screen">
 			<div className="h-[96%] w-[80%] mx-auto flex max-md:flex-col max-md:justify-center">
@@ -26,11 +32,21 @@ const LandingPage = () => {
 					<div>
 						<h1 className="mt-[170px] font-bold text-[65px] max-md:mt-0 max-md:text-[40px] max-sm:text-[30px]">Happening now</h1>
 						<p className="mt-5 text-[35px] font-bold max-md:text-[25px]">Join today.</p>
-						<div className="cursor-pointer transition-all hover:bg-slate-200 mt-6 py-1 w-[300px] justify-center rounded-full border flex items-center max-[400px]:w-[100%]">
-							<AiOutlineGoogle size={22} className="mr-1" />
-							<p className="font-semibold text-[18px]">Sign up with Google</p>
+						<div className="mt-2 w-[295px] flex justify-center">
+							<GoogleLogin
+								onSuccess={async response => {
+									const { email } = jwtDecode(response.credential)
+									const { data } = await loginApi({ emailUsername: email, isGoogle: true })
+
+									dispatch(login(data.result))
+									window.location.reload()
+								}}
+							/>
 						</div>
-						<div className="cursor-pointer transition-all hover:bg-slate-200 mt-6 py-1 w-[300px] justify-center rounded-full border flex items-center max-[400px]:w-[100%]">
+						<div onClick={() => {
+							googleLogout()
+							alert(1)
+						}} className="cursor-pointer transition-all hover:bg-slate-200 mt-6 py-1 w-[300px] justify-center rounded-full border flex items-center max-[400px]:w-[100%]">
 							<AiFillApple size={22} className="mr-1" />
 							<p className="font-semibold text-[18px]">Sign up with Apple</p>
 						</div>

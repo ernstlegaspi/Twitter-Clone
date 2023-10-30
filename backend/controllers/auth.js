@@ -7,11 +7,22 @@ import { badReq, conflict, serverError, success } from '../utils/index.js'
 
 export const login = async (req, res) => {
 	try {
-		const { emailUsername, password } = req.body
-
-		if(!emailUsername || !password) return badReq(res, 'Invalid Credentials')
+		const { emailUsername, password, isGoogle } = req.body
 
 		let user = null
+		
+		if(isGoogle) {
+			user = await User.findOne({ email: emailUsername })
+
+			const token = jwt.sign({ id: user._id }, process.env.KEY, { expiresIn: '3h' })
+
+			return success(res, {
+				id: user._id,
+				token
+			}, 'Successfully logged in')
+		}
+
+		if(!emailUsername || !password) return badReq(res, 'Invalid Credentials')
 
 		if(emailUsername.includes("@") && emailUsername.includes(".com")) {
 			user = await User.findOne({ email: emailUsername })

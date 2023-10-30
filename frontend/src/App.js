@@ -6,6 +6,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom'
 
 import { getCurrentUser } from './api/api'
 import { setCurrentUser } from './slices/user/userSlice'
+import { GoogleOAuthProvider } from '@react-oauth/google'
 
 const Home = lazy(() => import('./components/home/home'))
 const Sidebar = lazy(() => import('./components/sidebar/Sidebar'))
@@ -27,7 +28,6 @@ const TweetPage = lazy(() => import('./components/pages/tweetPage'))
 
 /*
 	--- END GAME --
-	8. Messages - Waiting
 	9. Google Login - Waiting
 	10. Facebook Login - Waiting
 
@@ -73,28 +73,32 @@ const App = () => {
 	}, [userInfoRef, userInfo?.id, dispatch])
 
 	return (
-		<div className={`h-screen w-full flex ${user ? '' : 'justify-center'} relative`}>
-			<BrowserRouter>
-				<Toaster />
-				<Suspense fallback={<p>Loading...</p>}>
-					{user ? <Sidebar showLogoutModal={setShowLogoutModal} showPostForm={setShowPostForm} user={user} /> : null}
-					{showPostForm ? <PostFormModal showPostForm={setShowPostForm} /> : null}
-					{showLogoutModal ? <LogoutModal showLogoutModal={setShowLogoutModal} /> : null}
-					{showMessageUserModal ? <MessageUserModal currentUser={user} showMessageUserModal={setShowMessageUserModal} /> : null}
-					<Routes>
-						<Route path='/' element={<Home user={user} />} />
-						<Route path='/notifications' element={<NotificationPage user={user} />} />
-						<Route path='/bookmarks' element={<BookmarkPage user={user} />} />
-						<Route path='/:username' element={<ProfilePage />} />
-						<Route path='/:username/status/:id' element={<TweetPage user={user} />} />
-						<Route path='/:username/followers' element={<FollowersPage user={user} />} />
-						<Route path='/:username/following' element={<FollowingPage user={user} />} />
-						<Route path='/messages' element={<MessagePage user={user} showMessageUserModal={setShowMessageUserModal} />} />
-					</Routes>
-					{user && window.location.pathname !== '/messages' ? <Trends /> : null}
-				</Suspense>
-			</BrowserRouter>
-		</div>
+		<GoogleOAuthProvider
+			clientId={process.env.REACT_APP_GOOGLE_ID}
+		>
+			<div className={`h-screen w-full flex ${user ? '' : 'justify-center'} relative`}>
+				<BrowserRouter>
+					<Toaster />
+					<Suspense fallback={<p>Loading...</p>}>
+						{user ? <Sidebar showLogoutModal={setShowLogoutModal} showPostForm={setShowPostForm} user={user} /> : null}
+						{showPostForm ? <PostFormModal showPostForm={setShowPostForm} /> : null}
+						{showLogoutModal ? <LogoutModal showLogoutModal={setShowLogoutModal} /> : null}
+						{showMessageUserModal ? <MessageUserModal currentUser={user} showMessageUserModal={setShowMessageUserModal} /> : null}
+						<Routes>
+							<Route path='/' element={<Home user={user} />} />
+							<Route path='/notifications' element={<NotificationPage user={user} />} />
+							<Route path='/bookmarks' element={<BookmarkPage user={user} />} />
+							<Route path='/:username' element={<ProfilePage />} />
+							<Route path='/:username/status/:id' element={<TweetPage user={user} />} />
+							<Route path='/:username/followers' element={<FollowersPage user={user} />} />
+							<Route path='/:username/following' element={<FollowingPage user={user} />} />
+							<Route path='/messages' element={<MessagePage user={user} showMessageUserModal={setShowMessageUserModal} />} />
+						</Routes>
+						{user && window.location.pathname !== '/messages' ? <Trends /> : null}
+					</Suspense>
+				</BrowserRouter>
+			</div>
+		</GoogleOAuthProvider>
 	)
 }
 

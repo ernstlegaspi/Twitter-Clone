@@ -11,6 +11,12 @@ const app = express()
 dotenv.config()
 
 app.use(cors())
+
+app.use((req, res, next) => {
+	res.header('Cross-Origin-Opener-Policy', 'same-origin; same-origin-allow-popups')
+	next()
+})
+
 app.use(express.json({ extended: true, limit: '30mb' }))
 app.use(express.urlencoded({ extended: true, limit: '30mb' }))
 
