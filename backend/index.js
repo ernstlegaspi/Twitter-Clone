@@ -31,5 +31,10 @@ const io = new Server(_server, {
 app.use(``, routes)
 
 io.on('connect', socket => {
-	console.log(socket.id)
+	socket.on('send-message', message => {
+		socket.broadcast.emit('receive-message', message)
+	})
+	socket.on('send-typing', message => {
+		socket.broadcast.emit('receive-typing', message)
+	})
 })
